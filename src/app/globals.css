@@ -1,27 +1,31 @@
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  /* BeddyBot Fun Theme */
+  --color-background: #1a2238;
+  /* Deep Navy */
+  --color-primary: #ff9f43;
+  /* Vibrant Orange */
+  --color-accent-blue: #4D96FF;
+  /* Electric Blue */
+  --color-accent-green: #6BCB77;
+  /* Neon Green */
+  --color-text: #fdfbf7;
+  /* Soft Cream */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+  --color-surface: rgba(26, 34, 56, 0.6);
+  /* Semi-transparent navy */
+  --color-border: rgba(77, 150, 255, 0.3);
+  /* Blueish border */
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
+  --radius-full: 9999px;
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-pop: 0 6px 0px rgba(0, 0, 0, 0.2);
+  /* 3D effect shadow */
+  --shadow-glow: 0 0 20px rgba(77, 150, 255, 0.3);
 }
 
 * {
@@ -30,13 +34,169 @@ body {
   margin: 0;
 }
 
+body {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-family: var(--font-outfit), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  /* Circuit Constellation Pattern */
+  background-image:
+    radial-gradient(circle at 15% 50%, rgba(77, 150, 255, 0.08) 0%, transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(255, 159, 67, 0.08) 0%, transparent 25%),
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+}
+
 a {
   color: inherit;
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+/* Robot HUD Panel */
+.glass-panel {
+  background: var(--color-surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3), inset 0 0 20px rgba(77, 150, 255, 0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative corner accents for panels */
+.glass-panel::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, var(--color-accent-blue), transparent);
+  opacity: 0.5;
+}
+
+/* Fun 3D Buttons */
+.btn-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 800;
+  padding: 1rem 2rem;
+  border-radius: var(--radius-xl);
+  border: none;
+  cursor: pointer;
+  transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: #1a2238;
+  /* Dark text for contrast on yellow/orange */
+  box-shadow: 0 6px 0 #e58e3c, 0 10px 10px rgba(0, 0, 0, 0.2);
+  /* 3D bottom edge */
+}
+
+.btn-primary:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 #e58e3c, 0 4px 4px rgba(0, 0, 0, 0.2);
+}
+
+.btn-secondary {
+  background-color: var(--color-accent-blue);
+  color: white;
+  box-shadow: 0 6px 0 #3d78cc, 0 10px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-secondary:active {
+  transform: translateY(4px);
+  box-shadow: 0 2px 0 #3d78cc, 0 4px 4px rgba(0, 0, 0, 0.2);
+}
+
+.btn-glass {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--color-text);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 0 rgba(255, 255, 255, 0.05);
+}
+
+.btn-glass:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Inputs styled like data slots */
+.input-base {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background: rgba(13, 20, 36, 0.6);
+  /* Darker slot */
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: 1.1rem;
+  color: white;
+  transition: all 0.2s;
+  outline: none;
+  font-family: monospace;
+  /* Coding font for inputs */
+}
+
+.input-base:focus {
+  border-color: var(--color-accent-green);
+  box-shadow: 0 0 15px rgba(107, 203, 119, 0.2);
+  background: rgba(13, 20, 36, 0.8);
+}
+
+/* Animations */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
   }
+
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 20px rgba(77, 150, 255, 0.2);
+  }
+
+  50% {
+    box-shadow: 0 0 40px rgba(77, 150, 255, 0.4);
+  }
+}
+
+/* Layout Utilities */
+.flex-col {
+  display: flex;
+  flexDirection: column;
+}
+
+.items-center {
+  alignItems: center;
+}
+
+.justify-center {
+  justifyContent: center;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.text-center {
+  textAlign: center;
 }
