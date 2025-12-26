@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import LogoutButton from '@/components/LogoutButton';
+import AdminLink from '@/components/AdminLink';
 import ProfileCard from '@/components/Dashboard/ProfileCard';
 import StoryCard from '@/components/Dashboard/StoryCard';
 import AddChildModal from '@/components/Dashboard/AddChildModal';
@@ -72,7 +73,10 @@ export default function Dashboard() {
                 <div style={{ fontSize: '1.5rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span style={{ fontSize: '1.8rem' }}>🤖</span> BeddyBot
                 </div>
-                <LogoutButton />
+                <div className="flex items-center gap-4">
+                    <AdminLink />
+                    <LogoutButton />
+                </div>
             </nav>
 
             <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>

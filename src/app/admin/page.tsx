@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
     Users, Shield, Plus, MoreVertical,
-    Search, Edit, Trash2, ShieldAlert
+    Search, Edit, Trash2, ShieldAlert, ArrowLeft
 } from 'lucide-react';
 import UserModal from '@/components/Admin/UserModal';
 
@@ -85,6 +86,14 @@ export default function AdminDashboard() {
                 {/* Header */}
                 <div className="flex justify-between items-center mb-10">
                     <div>
+                        <div className="flex items-center gap-4 mb-2">
+                            <Link
+                                href="/dashboard"
+                                className="text-gray-400 hover:text-white flex items-center gap-1 text-sm font-medium transition-colors"
+                            >
+                                <ArrowLeft size={16} /> Dashboard
+                            </Link>
+                        </div>
                         <h1 className="text-3xl font-bold flex items-center gap-3">
                             <Shield className="text-purple-500" size={32} />
                             Master Admin
@@ -165,8 +174,8 @@ export default function AdminDashboard() {
                                         </td>
                                         <td className="p-6">
                                             <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ${user.role === 'admin'
-                                                    ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
-                                                    : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
+                                                ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
+                                                : 'bg-blue-500/20 text-blue-300 border border-blue-500/30'
                                                 }`}>
                                                 {user.role}
                                             </span>
