@@ -17,23 +17,22 @@ export async function POST(req: Request) {
         }
 
         console.log("Generating speech for text length:", text.length);
-        console.log("Using API Key:", process.env.OPENAI_API_KEY ? "Present" : "Missing");
 
-        const mp3 = await openai.audio.speech.create({
-            model: "tts-1", // Switch to standard for speed testing
+        // Truncate if too long (OpenAI limit is ~4096 chars)
+        const safeText = text.length > 4000 ? text.substring(0, 4000) + "..." : text;
+
+        const response = await openai.audio.speech.create({
+            model: "tts-1",
             voice: "shimmer",
-            input: text,
+            input: safeText,
         });
 
-        console.log("OpenAI TTS response received");
+        console.log("OpenAI TTS stream started");
 
-        const buffer = Buffer.from(await mp3.arrayBuffer());
-        console.log("Audio buffer created, size:", buffer.length);
-
-        return new NextResponse(buffer, {
+        // Return the stream directly
+        return new NextResponse(response.body, {
             headers: {
                 'Content-Type': 'audio/mpeg',
-                'Content-Length': buffer.length.toString(),
             },
         });
 
