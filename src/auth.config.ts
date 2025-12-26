@@ -9,8 +9,19 @@ export const authConfig = {
         authorized({ auth, request: { nextUrl } }) {
             const isLoggedIn = !!auth?.user;
             const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
+            const isOnAdmin = nextUrl.pathname.startsWith('/admin');
             const isOnStory = nextUrl.pathname.startsWith('/story') || nextUrl.pathname.startsWith('/create');
             const isOnAuth = nextUrl.pathname.startsWith('/login') || nextUrl.pathname.startsWith('/signup');
+
+            if (isOnAdmin) {
+                if (!isLoggedIn) return false;
+                // @ts-ignore
+                if (auth?.user?.role !== 'admin') {
+                    // Redirect non-admins to dashboard if they try to access admin
+                    return Response.redirect(new URL('/dashboard', nextUrl));
+                }
+                return true;
+            }
 
             if (isOnDashboard) {
                 if (isLoggedIn) return true;
