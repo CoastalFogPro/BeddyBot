@@ -70,7 +70,10 @@ export default function StoryView() {
                         })
                     ]);
 
-                    if (!storyRes.ok) throw new Error("Story generation failed");
+                    if (!storyRes.ok) {
+                        const errData = await storyRes.json().catch(() => ({}));
+                        throw new Error(errData.error || "Story generation failed");
+                    }
 
                     const storyData = await storyRes.json();
                     setTitle(storyData.title);
@@ -88,10 +91,16 @@ export default function StoryView() {
                         setImageUrl(''); // Fallback or keep empty
                     }
 
-                } catch (error) {
+                } catch (error: any) {
                     console.error("Error generating content:", error);
                     setTitle("Oh no!");
-                    setContent(["The story machine needs a nap. Please try again later!"]);
+
+                    // Show specific error if it's about the API key
+                    if (error.message?.includes('API Key')) {
+                        setContent(["It looks like the magic keys (API Keys) are missing on the server. Please check your Netlify settings!"]);
+                    } else {
+                        setContent(["The story machine needs a nap. Please try again later!"]);
+                    }
                 }
             } else {
                 // --- VIEW MODE (Saved Story) ---
