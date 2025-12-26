@@ -24,7 +24,78 @@ export default function StoryView() {
 
     // State for UI
     const [isLoading, setIsLoading] = useState(true);
-    const [isPlaying, setIsPlaying] = useState(false); // Placeholder for TTS
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [audioUrl, setAudioUrl] = useState<string | null>(null);
+    const [audioLoading, setAudioLoading] = useState(false);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    // Cleanup audio on unmount
+    useEffect(() => {
+        return () => {
+            if (audioRef.current) {
+                audioRef.current.pause();
+                audioRef.current = null;
+            }
+        };
+    }, []);
+
+    const toggleAudio = async () => {
+        if (audioLoading) return;
+
+        // If audio is already playing, pause it
+        if (isPlaying && audioRef.current) {
+            audioRef.current.pause();
+            setIsPlaying(false);
+            return;
+        }
+
+        // If audio is paused but exists, resume it
+        if (!isPlaying && audioRef.current) {
+            try {
+                await audioRef.current.play();
+                setIsPlaying(true);
+            } catch (e) {
+                console.error("Resume failed", e);
+            }
+            return;
+        }
+
+        // If no audio exists, fetch it
+        setAudioLoading(true);
+        try {
+            // Combine title and content for full narration
+            const fullText = title + ". \n\n" + content.join('\n\n');
+
+            const res = await fetch('/api/audio/speech', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ text: fullText }),
+            });
+
+            if (!res.ok) throw new Error('Failed to generate audio');
+
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            setAudioUrl(url);
+
+            const audio = new Audio(url);
+            audioRef.current = audio;
+
+            audio.onended = () => setIsPlaying(false);
+            // We handle pause manually to avoid state flickers, but good to have safety
+            audio.onpause = () => setIsPlaying(false);
+            audio.onplay = () => setIsPlaying(true);
+
+            await audio.play();
+            setIsPlaying(true);
+
+        } catch (error) {
+            console.error("Audio generation failed", error);
+            alert("Sorry, I couldn't read the story right now. Please try again.");
+        } finally {
+            setAudioLoading(false);
+        }
+    };
     const [isSaved, setIsSaved] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
 
@@ -255,21 +326,42 @@ export default function StoryView() {
                         }}>
                             {title}
                             <button
-                                onClick={() => setIsPlaying(!isPlaying)}
+                                onClick={toggleAudio}
+                                disabled={audioLoading}
                                 style={{
                                     background: '#4f46e5',
                                     color: 'white',
                                     border: 'none',
                                     borderRadius: '50%',
-                                    width: '40px', height: '40px',
+                                    width: '48px', height: '48px',
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    cursor: 'pointer',
-                                    boxShadow: '0 4px 6px rgba(79, 70, 229, 0.3)'
+                                    cursor: audioLoading ? 'wait' : 'pointer',
+                                    boxShadow: '0 4px 15px rgba(79, 70, 229, 0.4)',
+                                    transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                                    opacity: audioLoading ? 0.7 : 1
                                 }}
+                                title={audioUrl ? (isPlaying ? "Pause" : "Resume") : "Read to me"}
                             >
-                                {isPlaying ? <Pause size={18} fill="white" /> : <Play size={18} fill="white" />}
+                                {audioLoading ? (
+                                    <div style={{
+                                        width: '16px', height: '16px',
+                                        border: '2px solid rgba(255,255,255,0.3)',
+                                        borderTopColor: 'white',
+                                        borderRadius: '50%',
+                                        animation: 'spin 1s linear infinite'
+                                    }} />
+                                ) : isPlaying ? (
+                                    <Pause size={20} fill="white" />
+                                ) : (
+                                    <Play size={20} fill="white" style={{ marginLeft: '2px' }} />
+                                )}
                             </button>
                         </h1>
+                        <style jsx>{`
+                            @keyframes spin {
+                                to { transform: rotate(360deg); }
+                            }
+                        `}</style>
                     </header>
 
                     {/* Text Content */}
