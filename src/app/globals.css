@@ -265,3 +265,52 @@ a {
   animation: blob-pulse 8s ease-in-out infinite, float-slow 6s ease-in-out infinite;
   transition: all 0.5s ease;
 }
+
+/* Hero Section Layout */
+.hero-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 3rem;
+  padding: 4rem 2rem 6rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  flex: 1;
+}
+
+.hero-blob-container {
+  width: 100%;
+  max-width: 450px;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+@media (min-width: 900px) {
+  .hero-section {
+    flex-direction: row; /* Side by side */
+    text-align: left;
+    align-items: center; /* Vertically center */
+    padding-top: 6rem;
+  }
+
+  .hero-content-wrapper {
+    align-items: flex-start; /* Left align text */
+    padding-left: 2rem;
+  }
+
+  .hero-blob-container {
+    justify-content: flex-end; /* Push image towards center seam */
+    padding-right: 2rem;
+  }
+}
