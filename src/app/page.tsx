@@ -91,16 +91,21 @@ export default function LandingPage() {
 
         {/* LEFT COMPONENT: Hero Image (Desktop Left) */}
         <div className="hero-blob-container">
-          {/* Hero Image Frame - Cleaner Look */}
-          <div className="hero-image-frame">
-            <Image
-              src="/hero-robot.png"
-              alt="BeddyBot Reading a Story"
-              fill
-              style={{ objectFit: 'contain', padding: '20px' }}
-              priority
-            />
-          </div>
+          <Image
+            src="/hero-robot.png"
+            alt="BeddyBot Reading a Story"
+            width={500}
+            height={500}
+            style={{
+              width: '100%',
+              height: 'auto',
+              borderRadius: '32px',
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)',
+              transition: 'transform 0.3s ease, box-shadow 0.3s ease'
+            }}
+            className="hero-robot-image"
+            priority
+          />
         </div>
 
         {/* RIGHT COMPONENT: Content (Desktop Right) */}
