@@ -180,7 +180,7 @@ export default function LandingPage() {
           {/* CTA Buttons */}
           <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
             <Link href="/signup" className="btn-primary" style={{ padding: '1rem 2.5rem', fontSize: '1.2rem', display: 'flex', gap: '0.8rem', alignItems: 'center', boxShadow: '0 10px 30px -5px rgba(255, 159, 67, 0.4)', borderRadius: '50px' }}>
-              Create Their Story Free <ArrowRight size={24} />
+              Get Started Today! <ArrowRight size={24} />
             </Link>
           </div>
         </div>
@@ -237,6 +237,118 @@ export default function LandingPage() {
             desc="BeddyBot reads the personalized story aloud with warm, friendly voices. Your child will light up hearing their own name in the adventure."
             accentColor="rgba(107, 203, 119, 0.2)"
           />
+        </div>
+      </section>
+
+      {/* App Interface Showcase */}
+      <section style={{
+        padding: '6rem 2rem',
+        maxWidth: '1400px',
+        margin: '0 auto',
+        width: '100%',
+        position: 'relative',
+        zIndex: 1,
+        overflow: 'hidden'
+      }}>
+        {/* Section Header */}
+        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+          <h2 style={{
+            fontSize: 'clamp(2rem, 4vw, 3rem)',
+            fontWeight: '800',
+            marginBottom: '1rem',
+            background: 'linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent'
+          }}>
+            See BeddyBot in Action
+          </h2>
+          <p style={{ fontSize: '1.2rem', color: 'rgba(255,255,255,0.7)', maxWidth: '600px', margin: '0 auto' }}>
+            From creation to bedtime magic in just a few clicks
+          </p>
+        </div>
+
+        {/* Screenshots Grid */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+          gap: '3rem',
+          alignItems: 'center'
+        }}>
+          {/* Screenshot 1 - Story Form */}
+          <div className="screenshot-float" style={{
+            position: 'relative',
+            borderRadius: '24px',
+            overflow: 'hidden',
+            boxShadow: '0 30px 80px rgba(0, 0, 0, 0.5)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.6), rgba(26, 34, 56, 0.3))',
+            animation: 'float-screenshot 6s ease-in-out infinite',
+            animationDelay: '0s'
+          }}>
+            <Image
+              src="/screenshot-story-form.png"
+              alt="Story Creation Interface"
+              width={600}
+              height={800}
+              style={{ width: '100%', height: 'auto', display: 'block' }}
+            />
+            <div style={{
+              position: 'absolute',
+              bottom: '1.5rem',
+              left: '1.5rem',
+              right: '1.5rem',
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(10px)',
+              padding: '1rem',
+              borderRadius: '12px',
+              border: '1px solid rgba(255,255,255,0.1)'
+            }}>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
+                ✨ Personalize Every Detail
+              </h3>
+              <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
+                Enter your child's name, age, and favorite themes
+              </p>
+            </div>
+          </div>
+
+          {/* Screenshot 2 - Story Result */}
+          <div className="screenshot-float" style={{
+            position: 'relative',
+            borderRadius: '24px',
+            overflow: 'hidden',
+            boxShadow: '0 30px 80px rgba(77, 150, 255, 0.3)',
+            border: '1px solid rgba(77, 150, 255, 0.2)',
+            background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.6), rgba(26, 34, 56, 0.3))',
+            animation: 'float-screenshot 6s ease-in-out infinite',
+            animationDelay: '3s'
+          }}>
+            <Image
+              src="/screenshot-story-result.png"
+              alt="Story Result Interface"
+              width={600}
+              height={800}
+              style={{ width: '100%', height: 'auto', display: 'block' }}
+            />
+            <div style={{
+              position: 'absolute',
+              bottom: '1.5rem',
+              left: '1.5rem',
+              right: '1.5rem',
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(10px)',
+              padding: '1rem',
+              borderRadius: '12px',
+              border: '1px solid rgba(77, 150, 255, 0.2)'
+            }}>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
+                🎨 Beautiful Stories Come to Life
+              </h3>
+              <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
+                Illustrated adventures with audio narration
+              </p>
+            </div>
+          </div>
         </div>
       </section>
     </main>

@@ -393,3 +393,22 @@ a {
   border-color: rgba(255,255,255,0.2);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
 }
+
+/* Screenshot Float Animation */
+@keyframes float-screenshot {
+  0%, 100% {
+    transform: translateY(0px) scale(1);
+  }
+  50% {
+    transform: translateY(-20px) scale(1.02);
+  }
+}
+
+.screenshot-float {
+  transition: all 0.4s ease;
+}
+
+.screenshot-float:hover {
+  transform: translateY(-10px) scale(1.05) !important;
+  box-shadow: 0 40px 100px rgba(77, 150, 255, 0.4) !important;
+}
