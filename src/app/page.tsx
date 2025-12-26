@@ -189,56 +189,125 @@ export default function LandingPage() {
 
       {/* Feature Grid */}
       <section style={{
-        padding: '4rem 2rem',
+        padding: '4rem 2rem 6rem',
         maxWidth: '1200px',
         margin: '0 auto',
         width: '100%',
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-        gap: '2rem',
         position: 'relative',
         zIndex: 1
       }}>
-        <FeatureCard
-          icon={<Sparkles size={32} color="#ff9f43" />}
-          title="Built Just for Them"
-          desc="Enter your child's name, age, and interests. Watch as BeddyBot creates a one-of-a-kind adventure where they're the hero, perfectly tailored to their imagination."
-        />
-        <FeatureCard
-          icon={<Shield size={32} color="#4D96FF" />}
-          title="Safe & Age-Appropriate"
-          desc="Every story adapts to your child's age with vocabulary and themes that are just right. Our Safety Shield ensures content is always gentle and worry-free."
-        />
-        <FeatureCard
-          icon={<Volume2 size={32} color="#00E096" />}
-          title="Hear Their Name Spoken"
-          desc="BeddyBot reads the personalized story aloud with warm, friendly voices. Your child will light up hearing their own name in the adventure."
-        />
+        {/* Section Header */}
+        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+          <h2 style={{
+            fontSize: 'clamp(2rem, 4vw, 3rem)',
+            fontWeight: '800',
+            marginBottom: '1rem',
+            background: 'linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent'
+          }}>
+            How BeddyBot Works Its Magic
+          </h2>
+          <p style={{ fontSize: '1.2rem', color: 'rgba(255,255,255,0.7)', maxWidth: '600px', margin: '0 auto' }}>
+            Three simple steps to create unforgettable bedtime adventures
+          </p>
+        </div>
+
+        {/* Cards Grid */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+          gap: '2rem'
+        }}>
+          <FeatureCard
+            icon="/robot-personalization.png"
+            title="Built Just for Them"
+            desc="Enter your child's name, age, and interests. Watch as BeddyBot creates a one-of-a-kind adventure where they're the hero, perfectly tailored to their imagination."
+            accentColor="rgba(255, 159, 67, 0.2)"
+          />
+          <FeatureCard
+            icon="/robot-safety.png"
+            title="Safe & Age-Appropriate"
+            desc="Every story adapts to your child's age with vocabulary and themes that are just right. Our Safety Shield ensures content is always gentle and worry-free."
+            accentColor="rgba(77, 150, 255, 0.2)"
+          />
+          <FeatureCard
+            icon="/robot-audio.png"
+            title="Hear Their Name Spoken"
+            desc="BeddyBot reads the personalized story aloud with warm, friendly voices. Your child will light up hearing their own name in the adventure."
+            accentColor="rgba(107, 203, 119, 0.2)"
+          />
+        </div>
       </section>
     </main>
   );
 }
 
-function FeatureCard({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) {
+function FeatureCard({ icon, title, desc, accentColor }: { icon: string, title: string, desc: string, accentColor: string }) {
   return (
-    <div className="glass-panel" style={{
-      padding: '2rem',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '1rem',
-      background: 'rgba(255,255,255,0.03)'
-    }}>
+    <div style={{
+      background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.8), rgba(26, 34, 56, 0.4))',
+      backdropFilter: 'blur(20px)',
+      border: '1px solid rgba(255,255,255,0.1)',
+      borderRadius: '24px',
+      padding: '2.5rem',
+      position: 'relative',
+      overflow: 'hidden',
+      transition: 'all 0.3s ease',
+      cursor: 'pointer'
+    }}
+      className="feature-card-hover"
+    >
+      {/* Accent gradient overlay */}
       <div style={{
-        width: '60px', height: '60px',
-        borderRadius: '16px',
-        background: 'rgba(255,255,255,0.1)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        marginBottom: '0.5rem'
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: '4px',
+        background: `linear-gradient(90deg, transparent, ${accentColor}, transparent)`,
+        opacity: 0.6
+      }} />
+
+      {/* Icon Container */}
+      <div style={{
+        width: '80px',
+        height: '80px',
+        borderRadius: '20px',
+        background: accentColor,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: '1.5rem',
+        boxShadow: `0 10px 30px ${accentColor}`,
+        position: 'relative'
       }}>
-        {icon}
+        <Image
+          src={icon}
+          alt={title}
+          width={50}
+          height={50}
+          style={{ filter: 'brightness(1.1)' }}
+        />
       </div>
-      <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{title}</h3>
-      <p style={{ opacity: 0.8, lineHeight: '1.6' }}>{desc}</p>
+
+      <h3 style={{
+        fontSize: '1.6rem',
+        fontWeight: '800',
+        marginBottom: '1rem',
+        color: 'white'
+      }}>
+        {title}
+      </h3>
+
+      <p style={{
+        fontSize: '1.05rem',
+        opacity: 0.85,
+        lineHeight: '1.7',
+        color: 'rgba(255,255,255,0.9)'
+      }}>
+        {desc}
+      </p>
     </div>
   );
 }
