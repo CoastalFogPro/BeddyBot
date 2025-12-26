@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { handleSignup } from '../auth/actions';
 
@@ -50,8 +51,20 @@ export default function SignupPage() {
                 background: '#fff',
                 color: '#1a2238'
             }}>
-                <div style={{ textAlign: 'center' }}>
-                    <div style={{ fontSize: '4rem', marginBottom: '1rem' }}>🚀</div>
+                <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                    <div style={{
+                        width: '120px',
+                        height: '120px',
+                        marginBottom: '1rem',
+                        position: 'relative'
+                    }}>
+                        <Image
+                            src="/hero-robot.png"
+                            alt="BeddyBot"
+                            fill
+                            style={{ objectFit: 'contain' }}
+                        />
+                    </div>
                     <h1 style={{ fontSize: '2rem', fontWeight: '800' }}>Join BeddyBot</h1>
                     <p style={{ color: '#666' }}>Create an account to save your stories</p>
                 </div>
