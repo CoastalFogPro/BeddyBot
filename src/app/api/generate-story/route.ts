@@ -57,32 +57,22 @@ export async function POST(request: Request) {
 
         // Age-specific logic with DNA injection
         if (ageNum < 3) {
-            // Nursery Rhymes need less complex plot, but we can still vary the tone/focus
+            // Nursery Rhymes
             systemPrompt += " Write a gentle, soothing nursery rhyme (8-12 lines). Output only the title and the content in JSON format.";
             userPrompt = `Write a unique bedtime rhyme for a ${age}-year-old ${gender} named ${name} about ${theme}. Focus on the feeling of ${randomQuality}. Make it sweet and simple.`;
-        } else if (ageNum <= 6) {
-            // Short stories
-            systemPrompt += " Write a whimsical, fun short story (approx 200 words). Avoid generic 'Once upon a time' openings if possible. Output only the title and the content in JSON format.";
-            userPrompt = `Write a unique magical bedtime story for a ${age}-year-old ${gender} named ${name} about ${theme}.
+        } else {
+            // All other ages now get the Rhyming Treatment per user request
+            systemPrompt += " Write a whimsical, rhyming story in the style of Dr. Seuss or a nursery rhyme. Use AABB or ABCB rhyme schemes. Keep the rhythm bouncy and fun. Output only the title and the content in JSON format.";
+            userPrompt = `Write a unique, rhyming bedtime story for a ${age}-year-old ${gender} named ${name} about ${theme}.
              
              STORY DNA:
              - Plot Archetype: ${randomArchetype}
              - Key Lesson: ${randomQuality}
              - Character Name: ${name}
              - Theme: ${theme}
+             - Style: Playful, rhythmic, and rhyming like Dr. Seuss.
              
-             Make the story feel fresh and specific to this plot archetype.`;
-        } else {
-            // Older kids (up to 10)
-            systemPrompt += " Write an engaging, well-structured adventure story (approx 400 words) with clear rising action and resolution. Output only the title and the content in JSON format.";
-            userPrompt = `Write an exciting adventure story for a ${age}-year-old ${gender} named ${name} about ${theme}.
-             
-             STORY DNA:
-             - Core Conflict: ${randomArchetype}
-             - Hero's Strength: ${randomQuality}
-             - Setting: A unique version of ${theme}
-             
-             Ensure the character solves a specific problem using their specific strength. Avoid generic endings.`;
+             Make the story feel fresh and specific to this plot archetype. Ensure the rhymes are clever and not forced.`;
         }
 
         const completion = await openai.chat.completions.create({
