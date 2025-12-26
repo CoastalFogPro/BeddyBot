@@ -12,12 +12,12 @@ export default function AdminLink() {
     if (!isAdmin) return null;
 
     return (
-        <Link
+        <a
             href="/admin"
             className="flex items-center gap-2 bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 px-3 py-2 rounded-lg transition-colors border border-purple-500/20 text-sm font-medium"
         >
             <Shield size={16} />
             Admin Panel
-        </Link>
+        </a>
     );
 }
