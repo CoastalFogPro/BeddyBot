@@ -1,6 +1,6 @@
-
 import Link from 'next/link';
-import { ArrowRight, Shield, Sparkles, Volume2 } from 'lucide-react';
+import Image from 'next/image';
+import { ArrowRight, Shield, Sparkles, Volume2, Star } from 'lucide-react';
 
 export default function LandingPage() {
   return (
@@ -9,33 +9,83 @@ export default function LandingPage() {
       display: 'flex',
       flexDirection: 'column',
       color: 'white',
-      overflowX: 'hidden'
+      overflowX: 'hidden',
+      position: 'relative'
     }}>
+      {/* Background Ambience */}
+      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        <div className="star-twinkle" style={{ top: '10%', left: '20%', animationDelay: '0s' }}>✨</div>
+        <div className="star-twinkle" style={{ top: '20%', right: '15%', animationDelay: '1s' }}>✨</div>
+        <div className="star-twinkle" style={{ top: '60%', left: '10%', animationDelay: '2s' }}>✨</div>
+        <div style={{
+          position: 'absolute', top: '-20%', left: '-10%', width: '50vw', height: '50vw',
+          background: 'radial-gradient(circle, rgba(77, 150, 255, 0.15) 0%, transparent 70%)',
+          filter: 'blur(80px)'
+        }} />
+        <div style={{
+          position: 'absolute', bottom: '-20%', right: '-10%', width: '60vw', height: '60vw',
+          background: 'radial-gradient(circle, rgba(255, 159, 67, 0.1) 0%, transparent 70%)',
+          filter: 'blur(80px)'
+        }} />
+      </div>
+
+      <style jsx global>{`
+        @keyframes float-slow {
+          0%, 100% { transform: translateY(0px) rotate(0deg); }
+          50% { transform: translateY(-20px) rotate(1deg); }
+        }
+        @keyframes twinkle {
+          0%, 100% { opacity: 0.3; transform: scale(0.8); }
+          50% { opacity: 1; transform: scale(1.2); }
+        }
+        @keyframes pulse {
+          0%, 100% { box-shadow: 0 0 10px var(--color-accent-green); }
+          50% { box-shadow: 0 0 20px var(--color-accent-green); }
+        }
+        .star-twinkle {
+          position: absolute;
+          font-size: 1.5rem;
+          color: rgba(255,255,255,0.6);
+          animation: twinkle 4s ease-in-out infinite;
+        }
+        .hero-image-container {
+          animation: float-slow 6s ease-in-out infinite;
+          filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
+          transition: transform 0.3s ease;
+        }
+        .hero-image-container:hover {
+           transform: scale(1.02) translateY(-5px);
+        }
+      `}</style>
+
       {/* Navbar */}
       <nav style={{
         padding: '1.5rem 2rem',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        background: 'rgba(26, 34, 56, 0.8)',
-        backdropFilter: 'blur(10px)',
+        background: 'rgba(26, 34, 56, 0.6)',
+        backdropFilter: 'blur(12px)',
         position: 'sticky',
         top: 0,
-        zIndex: 50
+        zIndex: 50,
+        borderBottom: '1px solid rgba(255,255,255,0.05)'
       }}>
         <div style={{ fontWeight: '800', fontSize: '1.5rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <span style={{ fontSize: '2rem', animation: 'float 3s ease-in-out infinite' }}>🤖</span> BeddyBot
+          <span style={{ fontSize: '2rem' }}>🤖</span> BeddyBot
         </div>
         <div style={{ display: 'flex', gap: '1rem' }}>
           <Link href="/login" style={{
             fontWeight: '600',
             color: 'white',
             textDecoration: 'none',
-            padding: '0.5rem 1rem'
-          }}>
+            padding: '0.6rem 1.2rem',
+            opacity: 0.9,
+            transition: 'opacity 0.2s'
+          }} className="hover:opacity-100">
             Login
           </Link>
-          <Link href="/signup" className="btn-primary" style={{ fontSize: '0.9rem', padding: '0.5rem 1.5rem' }}>
+          <Link href="/signup" className="btn-primary" style={{ fontSize: '0.9rem', padding: '0.6rem 1.5rem' }}>
             Get Started
           </Link>
         </div>
@@ -48,50 +98,88 @@ export default function LandingPage() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '4rem 2rem',
+        padding: '4rem 2rem 6rem',
         textAlign: 'center',
-        background: 'radial-gradient(circle at center, rgba(77, 150, 255, 0.1) 0%, transparent 70%)'
+        zIndex: 1
       }}>
+
+        {/* Status Badge */}
         <div style={{
-          fontSize: '0.9rem',
+          fontSize: '0.85rem',
           color: 'var(--color-accent-green)',
           fontWeight: 'bold',
           textTransform: 'uppercase',
           letterSpacing: '2px',
-          marginBottom: '1.5rem',
+          marginBottom: '2rem',
           display: 'flex',
           alignItems: 'center',
-          gap: '0.5rem',
-          background: 'rgba(0, 255, 148, 0.1)',
-          padding: '0.5rem 1rem',
+          gap: '0.6rem',
+          background: 'rgba(26, 34, 56, 0.6)',
+          padding: '0.6rem 1.2rem',
           borderRadius: '50px',
-          backdropFilter: 'blur(5px)'
+          border: '1px solid rgba(0, 255, 148, 0.2)',
+          boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
         }}>
-          <span style={{ width: '8px', height: '8px', background: 'var(--color-accent-green)', borderRadius: '50%', boxShadow: '0 0 10px var(--color-accent-green)' }}></span>
+          <span style={{ width: '8px', height: '8px', background: 'var(--color-accent-green)', borderRadius: '50%', boxShadow: '0 0 10px var(--color-accent-green)', animation: 'pulse 2s infinite' }}></span>
           System Online • v2.0
         </div>
 
+        {/* Main Heading */}
         <h1 style={{
-          fontSize: 'clamp(2.5rem, 5vw, 4.5rem)',
+          fontSize: 'clamp(3rem, 6vw, 5rem)',
           fontWeight: '900',
           lineHeight: '1.1',
           marginBottom: '1.5rem',
-          maxWidth: '800px'
+          maxWidth: '900px',
+          textShadow: '0 4px 10px rgba(0,0,0,0.3)'
         }}>
-          Unlock Infinite <br />
-          <span style={{ color: 'var(--color-primary)' }}>Bedtime Stories</span>
+          Magic Bedtime Stories <br />
+          <span style={{
+            background: 'linear-gradient(135deg, #fff 0%, #4D96FF 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            filter: 'drop-shadow(0 0 20px rgba(77, 150, 255, 0.3))'
+          }}> Made & Read by Robots</span>
         </h1>
 
         <p style={{
-          fontSize: '1.25rem',
-          color: 'rgba(255,255,255,0.8)',
-          maxWidth: '600px',
+          fontSize: '1.4rem',
+          color: 'rgba(255,255,255,0.85)',
+          maxWidth: '650px',
           marginBottom: '3rem',
-          lineHeight: '1.6'
+          lineHeight: '1.6',
+          fontWeight: '500'
         }}>
-          Create personalized, magical adventures for your child in seconds.
-          Powered by AI, narrated by warm voices, and 100% safe.
+          Create personalized adventures in seconds. Safe, educational, and fun for your little dreamers.
         </p>
+
+        {/* CTA Buttons */}
+        <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '4rem' }}>
+          <Link href="/signup" className="btn-primary" style={{ padding: '1.2rem 3rem', fontSize: '1.3rem', display: 'flex', gap: '0.8rem', alignItems: 'center', boxShadow: '0 10px 30px -5px rgba(255, 159, 67, 0.4)' }}>
+            Start Creating Free <ArrowRight size={24} />
+          </Link>
+        </div>
+
+        {/* Hero Image */}
+        <div className="hero-image-container" style={{
+          position: 'relative',
+          width: '100%',
+          maxWidth: '500px',
+          aspectRatio: '1',
+          borderRadius: '24px',
+          overflow: 'hidden',
+          border: '4px solid rgba(255,255,255,0.1)',
+          background: 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)'
+        }}>
+          <Image
+            src="/hero-robot.png"
+            alt="BeddyBot Reading a Story"
+            fill
+            style={{ objectFit: 'contain' }}
+            priority
+          />
+        </div>
+
       </section>
 
       {/* Feature Grid */}
@@ -101,23 +189,25 @@ export default function LandingPage() {
         margin: '0 auto',
         width: '100%',
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-        gap: '2rem'
+        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+        gap: '2rem',
+        position: 'relative',
+        zIndex: 1
       }}>
         <FeatureCard
           icon={<Sparkles size={32} color="#ff9f43" />}
-          title="Unique Stories"
-          desc="Never the same story twice. Infinite themes, characters, and adventures generated instantly."
+          title="Infinite Imagination"
+          desc="Never read the same story twice. From space dinos to underwater castles, if you can dream it, BeddyBot can write it."
         />
         <FeatureCard
           icon={<Shield size={32} color="#4D96FF" />}
-          title="100% Child Safe"
-          desc="Strict safety filters and AI moderation ensure every story is appropriate for little ears."
+          title="100% Kid-Safe Zone"
+          desc="Our advanced Safety Shield automatically blocks scary or inappropriate topics, keeping bedtime peaceful and worry-free."
         />
         <FeatureCard
           icon={<Volume2 size={32} color="#00E096" />}
-          title="Audio Narration"
-          desc="Let BeddyBot read the story aloud with calming male and female voice options."
+          title="Storytime Narration"
+          desc="Too tired to read? Let our friendly robot voices read the story aloud with perfect pacing and warmth."
         />
       </section>
     </main>
