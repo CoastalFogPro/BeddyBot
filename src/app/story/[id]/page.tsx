@@ -339,31 +339,44 @@ export default function StoryView() {
                                 onClick={toggleAudio}
                                 disabled={audioLoading}
                                 style={{
-                                    background: '#4f46e5',
-                                    color: 'white',
+                                    background: audioLoading ? '#cbd5e1' : '#4f46e5',
+                                    color: audioLoading ? '#64748b' : 'white',
                                     border: 'none',
-                                    borderRadius: '50%',
-                                    width: '48px', height: '48px',
-                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    borderRadius: '50px',
+                                    padding: '0.8rem 1.5rem',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
                                     cursor: audioLoading ? 'wait' : 'pointer',
-                                    boxShadow: '0 4px 15px rgba(79, 70, 229, 0.4)',
-                                    transition: 'transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                                    opacity: audioLoading ? 0.7 : 1
+                                    boxShadow: audioLoading ? 'none' : '0 4px 15px rgba(79, 70, 229, 0.4)',
+                                    transition: 'all 0.2s',
+                                    fontSize: '1rem', fontWeight: '600'
                                 }}
-                                title={audioUrl ? (isPlaying ? "Pause" : "Resume") : "Read to me"}
                             >
                                 {audioLoading ? (
-                                    <div style={{
-                                        width: '16px', height: '16px',
-                                        border: '2px solid rgba(255,255,255,0.3)',
-                                        borderTopColor: 'white',
-                                        borderRadius: '50%',
-                                        animation: 'spin 1s linear infinite'
-                                    }} />
+                                    <>
+                                        <div style={{
+                                            width: '16px', height: '16px',
+                                            border: '2px solid #64748b',
+                                            borderTopColor: 'transparent',
+                                            borderRadius: '50%',
+                                            animation: 'spin 1s linear infinite'
+                                        }} />
+                                        <span>Preparing...</span>
+                                    </>
                                 ) : isPlaying ? (
-                                    <Pause size={20} fill="white" />
+                                    <>
+                                        <Pause size={20} fill="white" />
+                                        <span>Pause</span>
+                                    </>
+                                ) : audioUrl ? (
+                                    <>
+                                        <Play size={20} fill="white" />
+                                        <span>Tap to Start</span>
+                                    </>
                                 ) : (
-                                    <Play size={20} fill="white" style={{ marginLeft: '2px' }} />
+                                    <>
+                                        <Play size={20} fill="white" />
+                                        <span>Read to Me</span>
+                                    </>
                                 )}
                             </button>
                         </h1>
