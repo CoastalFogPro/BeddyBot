@@ -140,17 +140,29 @@ export default function LandingPage() {
               marginBottom: '0.5rem',
               textShadow: '0 4px 10px rgba(0,0,0,0.3)'
             }}>
-              <span className="animate-wiggle" style={{ color: '#FFD700', textShadow: '0 0 20px rgba(255, 215, 0, 0.5)' }}>Your Child</span> is the Star
+              <span className="animate-wiggle" style={{ color: '#FFD700', textShadow: '0 0 20px rgba(255, 215, 0, 0.5)' }}>Magical</span> Bedtime Stories
             </h1>
 
             <h2 style={{
               fontSize: 'clamp(1.5rem, 2.5vw, 2rem)',
               fontWeight: '700',
               color: 'rgba(255,255,255,0.9)',
-              lineHeight: '1.4',
-              marginBottom: '1rem'
+              display: 'flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              flexWrap: 'wrap'
             }}>
-              Bedtime stories personalized with their name, age, and favorite things
+              Lovingly Created & Read by
+              <span style={{
+                background: 'linear-gradient(135deg, #4D96FF 0%, #6BCB77 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                fontWeight: '900',
+                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))',
+                display: 'inline-block',
+                transform: 'rotate(-2deg)',
+                padding: '0 0.5rem'
+              }}>BeddyBot</span>
             </h2>
           </div>
 
