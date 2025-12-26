@@ -14,22 +14,48 @@ export default function LandingPage() {
     }}>
       {/* Background Ambience */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+        {/* Stars */}
         <div className="star-twinkle" style={{ top: '10%', left: '20%', animationDelay: '0s' }}>✨</div>
-        <div className="star-twinkle" style={{ top: '20%', right: '15%', animationDelay: '1s' }}>✨</div>
+        <div className="star-twinkle" style={{ top: '20%', right: '15%', animationDelay: '1s', fontSize: '1rem' }}>✨</div>
         <div className="star-twinkle" style={{ top: '60%', left: '10%', animationDelay: '2s' }}>✨</div>
+        <div className="star-twinkle" style={{ top: '80%', right: '30%', animationDelay: '1.5s', fontSize: '0.8rem' }}>✨</div>
+
+        {/* Shooting Stars */}
+        <div className="shooting-star" style={{ top: '10%', right: '10%', animationDelay: '0s' }}></div>
+        <div className="shooting-star" style={{ top: '30%', right: '5%', animationDelay: '4s' }}></div>
+        <div className="shooting-star" style={{ top: '60%', right: '20%', animationDelay: '7s' }}></div>
+
+        {/* Planets */}
+        <div className="planet" style={{
+          top: '15%', left: '5%', width: '80px', height: '80px',
+          background: 'linear-gradient(45deg, #ff9f43, #ff6b6b)',
+          boxShadow: '0 0 30px rgba(255, 159, 67, 0.3)',
+          animationDelay: '0s'
+        }}></div>
+
+        <div className="planet" style={{
+          bottom: '20%', right: '5%', width: '120px', height: '120px',
+          background: 'linear-gradient(45deg, #4D96FF, #6BCB77)',
+          boxShadow: '0 0 40px rgba(77, 150, 255, 0.3)',
+          opacity: 0.6,
+          animationDelay: '2s'
+        }}></div>
+
         <div style={{
-          position: 'absolute', top: '-20%', left: '-10%', width: '50vw', height: '50vw',
-          background: 'radial-gradient(circle, rgba(77, 150, 255, 0.15) 0%, transparent 70%)',
+          position: 'absolute', top: '-10%', left: '-10%', width: '60vw', height: '60vw',
+          background: 'radial-gradient(circle, rgba(77, 150, 255, 0.1) 0%, transparent 60%)',
           filter: 'blur(80px)'
         }} />
         <div style={{
-          position: 'absolute', bottom: '-20%', right: '-10%', width: '60vw', height: '60vw',
-          background: 'radial-gradient(circle, rgba(255, 159, 67, 0.1) 0%, transparent 70%)',
+          position: 'absolute', bottom: '-10%', right: '-10%', width: '70vw', height: '70vw',
+          background: 'radial-gradient(circle, rgba(255, 159, 67, 0.08) 0%, transparent 60%)',
           filter: 'blur(80px)'
         }} />
       </div>
 
-
+      <style jsx global>{`
+        /* Styles moved to globals.css to fix SSR issue */
+      `}</style>
 
       {/* Navbar */}
       <nav style={{
@@ -69,30 +95,15 @@ export default function LandingPage() {
 
         {/* LEFT COMPONENT: Hero Image (Desktop Left) */}
         <div className="hero-blob-container">
-          {/* Hero Image - Integrated with "portal" effect */}
-          <div className="hero-blob" style={{
-            position: 'relative',
-            width: '100%',
-            aspectRatio: '1',
-            overflow: 'hidden',
-            background: 'radial-gradient(circle at 30% 30%, rgba(77, 150, 255, 0.2), #1a2238)',
-            boxShadow: '0 20px 50px rgba(0,0,0,0.4), inset 0 0 60px rgba(77, 150, 255, 0.3)',
-            border: '4px solid rgba(255,255,255,0.1)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}>
+          {/* Hero Image Frame - Cleaner Look */}
+          <div className="hero-image-frame">
             <Image
               src="/hero-robot.png"
               alt="BeddyBot Reading a Story"
               fill
-              style={{ objectFit: 'cover', transform: 'scale(1.1)' }}
+              style={{ objectFit: 'contain', padding: '20px' }}
               priority
             />
-
-            {/* Overlay Sparkles */}
-            <div style={{ position: 'absolute', top: '20%', right: '20%', fontSize: '2rem', animation: 'twinkle 3s infinite' }}>✨</div>
-            <div style={{ position: 'absolute', bottom: '30%', left: '20%', fontSize: '1.5rem', animation: 'twinkle 4s infinite 1s' }}>⭐</div>
           </div>
         </div>
 
