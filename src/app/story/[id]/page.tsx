@@ -86,8 +86,18 @@ export default function StoryView() {
             audio.onpause = () => setIsPlaying(false);
             audio.onplay = () => setIsPlaying(true);
 
-            await audio.play();
-            setIsPlaying(true);
+            try {
+                await audio.play();
+                setIsPlaying(true);
+            } catch (playError: any) {
+                console.warn("Autoplay blocked, waiting for user interaction", playError);
+                setIsPlaying(false);
+                // If it's a NotAllowedError, we just stop. The user will see the Play button and click it again.
+                // This second click will work because it's a direct interaction with the existing audio element.
+                if (playError.name !== 'NotAllowedError') {
+                    alert("Could not play audio. Please try again.");
+                }
+            }
 
         } catch (error: any) {
             console.error("Audio generation failed", error);
