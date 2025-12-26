@@ -84,8 +84,26 @@ export default function AdminDashboard() {
     );
 
     return (
-        <main style={{ minHeight: '100vh', background: '#0f172a', color: 'white', padding: '2rem', fontFamily: 'var(--font-outfit)' }}>
-            <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        <main style={{ minHeight: '100vh', background: '#0f172a', color: 'white', fontFamily: 'var(--font-outfit)' }}>
+
+            {/* Top Navigation */}
+            <nav style={{
+                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                padding: '1.5rem 2rem',
+                borderBottom: '1px solid rgba(255,255,255,0.05)',
+                background: 'rgba(15, 23, 42, 0.8)',
+                backdropFilter: 'blur(10px)',
+                position: 'sticky', top: 0, zIndex: 50
+            }}>
+                <div style={{ fontSize: '1.5rem', fontWeight: '800', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span style={{ fontSize: '1.8rem' }}>🤖</span> BeddyBot
+                </div>
+                <div style={{ fontSize: '0.9rem', color: '#94a3b8', border: '1px solid rgba(255,255,255,0.1)', padding: '4px 12px', borderRadius: '20px' }}>
+                    Admin Mode
+                </div>
+            </nav>
+
+            <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
 
                 {/* Header */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '3rem' }}>
