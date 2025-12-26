@@ -8,16 +8,15 @@ export const authConfig = {
     callbacks: {
         authorized({ auth, request: { nextUrl } }) {
             const isLoggedIn = !!auth?.user;
-
-            // Protect critical routes
+            const isOnDashboard = nextUrl.pathname.startsWith('/dashboard');
             const isOnStory = nextUrl.pathname.startsWith('/story') || nextUrl.pathname.startsWith('/create');
             const isOnAuth = nextUrl.pathname.startsWith('/login') || nextUrl.pathname.startsWith('/signup');
 
-            if (isOnStory) {
+            if (isOnDashboard) {
                 if (isLoggedIn) return true;
-                return false; // Redirect unauthenticated users to login page
-            } else if (isLoggedIn && isOnAuth) {
-                return Response.redirect(new URL('/create', nextUrl));
+                return false; // Redirect unauthenticated users to login
+            } else if (isOnAuth && isLoggedIn) {
+                return Response.redirect(new URL('/dashboard', nextUrl));
             }
             return true;
         },

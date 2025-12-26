@@ -1,362 +1,320 @@
 "use client";
 
-import Link from 'next/link';
-import { useParams, useSearchParams } from 'next/navigation';
-import { Play, Pause, Download, Share2, BookOpen } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import { useRouter, useSearchParams, useParams } from 'next/navigation';
+import Image from 'next/image';
+import { Play, Pause, Save, ArrowLeft, BookOpen } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function StoryView() {
-    const { id } = useParams();
+    const params = useParams();
+    const id = params?.id as string;
     const searchParams = useSearchParams();
-    const [isPlaying, setIsPlaying] = useState(false);
+    const router = useRouter();
 
-    // Get inputs with fallbacks
-    const name = searchParams.get('name') || 'James';
-    const age = searchParams.get('age') || '5';
-    const theme = searchParams.get('theme') || 'Adventure';
-    const gender = searchParams.get('gender') || 'Boy';
+    // Determine if we are viewing a saved story or generating a new one
+    // "123" is our placeholder ID for new generations from the form
+    const isGeneratingNew = id === '123';
 
-    const [story, setStory] = useState({
-        title: `${name}'s ${theme} Adventure`,
-        content: ''
-    });
+    // State for Story Content
+    const [title, setTitle] = useState('');
+    const [content, setContent] = useState<string[]>([]);
+    const [imageUrl, setImageUrl] = useState('');
+    const [theme, setTheme] = useState('');
 
-    // State for generation status and dynamic assets
-    const [bgImage, setBgImage] = useState<string | null>(null);
-    const [isGenerating, setIsGenerating] = useState(true);
+    // State for UI
+    const [isLoading, setIsLoading] = useState(true);
+    const [isPlaying, setIsPlaying] = useState(false); // Placeholder for TTS
+    const [isSaved, setIsSaved] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
 
-    // Fetch Story and Image from API (with local fallback)
+    // Params for Generation (only relevant if isGeneratingNew)
+    const childId = searchParams.get('childId');
+    const childName = searchParams.get('name') || 'James';
+    const childAge = searchParams.get('age') || '5';
+    const childGender = searchParams.get('gender') || 'Boy';
+    const requestedTheme = searchParams.get('theme') || 'Space Adventure';
+
+    // Flag to prevent double-firing in Strict Mode
+    const hasFetchedRef = useRef(false);
+
     useEffect(() => {
-        const fetchContent = async () => {
-            setIsGenerating(true);
-            const ageNum = parseInt(age, 10);
+        // If we already fetched/generated, or if we have missing params, stop.
+        if (hasFetchedRef.current) return;
 
-            // 1. Generate Story
-            try {
-                const res = await fetch('/api/generate-story', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name, age, gender, theme })
-                });
+        const loadStory = async () => {
+            hasFetchedRef.current = true; // Mark as started immediately
+            setIsLoading(true);
 
-                if (res.ok) {
-                    const data = await res.json();
-                    setStory({ title: data.title, content: data.content });
-                } else {
-                    const errorData = await res.json().catch(() => ({}));
-                    if (errorData.code === 'SAFETY_VIOLATION') {
-                        setStory({
-                            title: 'Safety Shield Activated 🛡️',
-                            content: "Oops! That theme is a bit too grown-up for BeddyBot. We want to keep stories magical and safe for everyone.\n\nLet's try something else? How about 'Flying Pancakes' or 'A Friendly Dragon'?"
-                        });
-                        // Stop generation here to avoid fallback
-                        setIsGenerating(false);
-                        return;
+            if (isGeneratingNew) {
+                // --- GENERATION MODE ---
+                try {
+                    console.log("Generating story & image for:", { childName, requestedTheme });
+
+                    // Run Story and Image generation in parallel
+                    const [storyRes, imageRes] = await Promise.all([
+                        fetch('/api/generate-story', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                name: childName,
+                                age: childAge,
+                                gender: childGender,
+                                theme: requestedTheme
+                            })
+                        }),
+                        fetch('/api/generate-image', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ theme: requestedTheme })
+                        })
+                    ]);
+
+                    if (!storyRes.ok) throw new Error("Story generation failed");
+
+                    const storyData = await storyRes.json();
+                    setTitle(storyData.title);
+                    // Ensure content is array
+                    const contentArray = Array.isArray(storyData.content) ? storyData.content : storyData.content.split('\n\n');
+                    setContent(contentArray);
+                    setTheme(requestedTheme);
+
+                    // Handle Image Result
+                    if (imageRes.ok) {
+                        const imageData = await imageRes.json();
+                        setImageUrl(imageData.imageUrl);
+                    } else {
+                        console.warn("Image generation failed");
+                        setImageUrl(''); // Fallback or keep empty
                     }
-                    throw new Error('Story API failed');
+
+                } catch (error) {
+                    console.error("Error generating content:", error);
+                    setTitle("Oh no!");
+                    setContent(["The story machine needs a nap. Please try again later!"]);
                 }
-            } catch (error) {
-                console.warn("Falling back to offline story generation");
-                // FALLBACK LOGIC
-                let generatedContent = '';
-                let generatedTitle = '';
-                if (ageNum < 3) {
-                    generatedTitle = `${name}'s Gentle Rhyme`;
-                    generatedContent = `Twinkle, twinkle, little star,\nHow I wonder what you are.\nUp above the ${theme} so high,\nLike a diamond in the sky.\n\nSleepy ${name} close your eyes,\nUnderneath the moonlit skies.\nDream of ${theme}s soft and sweet,\nRest your busy little feet.`;
-                } else if (ageNum <= 7) {
-                    generatedTitle = `${name} and the Magic ${theme}`;
-                    generatedContent = `Once upon a time, in a land filled with colors and sparkles, lived a curious ${gender.toLowerCase()} named ${name}. Today was a special day because ${name} found a secret path leading to the Kingdom of ${theme}. "Wow!" whispered ${name}, seeing the friendly creatures dancing around.\n\nSuddenly, a tiny ${theme}-fairy flew over. "Hello ${name}! We've been waiting for you to join our parade!" ${name} laughed and clapped hands, marching along with the happy tune.\n\nIt was the most whimsical fun ever! As the sun began to set, the fairy sprinkled magic sleep-dust. "Goodnight, brave explorer," she chimed. And ${name} drifted off into a sweet, happy dream.`;
-                } else {
-                    generatedTitle = `The Chronicles of ${name}: The ${theme} Quest`;
-                    generatedContent = `The ancient prophecy spoke of a hero named ${name}, who would one day unlock the secrets of the ${theme} Realm. That day had finally arrived. Equipped with nothing but courage and a trusty backpack, ${name} stepped through the shimmering portal.\n\nThe air smelled of ozone and mystery. A vast landscape stretched out before them, filled with floating islands and crystalline structures that hummed with energy. "Halt!" boomed a voice. A guardian of the ${theme}, standing ten feet tall and made of starlight, blocked the path. "Only the pure of heart may pass."\n\n${name} stood tall, looking the guardian in the eye. "I come to learn, not to conquer," ${name} said, solving the guardian's riddle with wisdom beyond their years. Impressed, the guardian bowed low. "Enter, young legend. The world needs your kindness."\n\nAfter a long journey of discovery, solving puzzles, and helping lost star-creatures find their way home, ${name} returned to the ordinary world, wiser and ready for tomorrow's challenges. As the stars aligned, our hero finally rested, knowing the universe was safe once more.`;
+            } else {
+                // --- VIEW MODE (Saved Story) ---
+                try {
+                    console.log("Fetching saved story:", id);
+                    const res = await fetch(`/api/stories/${id}`);
+
+                    if (res.ok) {
+                        const data = await res.json();
+                        setTitle(data.title);
+                        // Content likely stored as single string in DB, split it back
+                        const contentData = data.content || "";
+                        setContent(contentData.split('\n\n'));
+                        setImageUrl(data.imageUrl);
+                        setTheme(data.theme);
+                        setIsSaved(true); // It's already saved
+                    } else {
+                        throw new Error("Story not found");
+                    }
+                } catch (error) {
+                    console.error("Error fetching story:", error);
+                    setTitle("Story not found");
+                    setContent(["We couldn't find this story in your library."]);
                 }
-                setStory({ title: generatedTitle, content: generatedContent });
             }
 
-            // 2. Generate Image
-            try {
-                const res = await fetch('/api/generate-image', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ theme })
-                });
+            setIsLoading(false);
+        };
 
-                if (res.ok) {
-                    const data = await res.json();
-                    setBgImage(data.imageUrl);
-                } else {
-                    const errorData = await res.json().catch(() => ({}));
-                    if (errorData.code === 'SAFETY_VIOLATION') {
-                        // Special flag for safety violation image
-                        setBgImage('SAFETY_BLOCKED');
-                        return;
-                    }
-                    throw new Error('Image API failed');
-                }
-            } catch (error) {
-                console.warn("Falling back to local images");
-                // FALLBACK LOGIC
-                const t = theme.toLowerCase();
-                if (t.includes('space') || t.includes('star') || t.includes('planet')) setBgImage('/space-bg.png');
-                else if (t.includes('forest') || t.includes('animal') || t.includes('magic')) setBgImage('/forest-bg.png');
-                else setBgImage(null);
+        loadStory();
+    }, [id, isGeneratingNew, childName, childAge, childGender, requestedTheme]);
+
+
+    const handleManualSave = async () => {
+        if (!childId || isSaved || isSaving) return;
+
+        setIsSaving(true);
+        try {
+            const res = await fetch('/api/stories/save', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    childId,
+                    title,
+                    content: content.join('\n\n'),
+                    imageUrl,
+                    theme
+                })
+            });
+
+            if (res.ok) {
+                setIsSaved(true);
+                // Optional: Could redirect to the new canonical URL, but staying here is fine
             }
-
-            setIsGenerating(false);
-        };
-
-        fetchContent();
-    }, [name, age, gender, theme]);
-
-    // Voice State
-    const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
-    const [voiceGender, setVoiceGender] = useState<'female' | 'male'>('female');
-
-    // Load available voices
-    useEffect(() => {
-        const loadVoices = () => {
-            const available = window.speechSynthesis.getVoices().filter(v => v.lang.startsWith('en'));
-            setVoices(available);
-        };
-
-        loadVoices();
-        window.speechSynthesis.onvoiceschanged = loadVoices;
-    }, []);
-
-    // Helper to find a specific gendered voice (heuristic based on common OS names)
-    const getBestVoice = (gender: 'male' | 'female') => {
-        const lowerGender = gender.toLowerCase();
-        // Specific high-quality overrides
-        const preferredNames = gender === 'male'
-            ? ['Google US English Male', 'Daniel', 'Alex', 'David', 'Microsoft David']
-            : ['Google US English Female', 'Samantha', 'Victoria', 'Zira', 'Microsoft Zira'];
-
-        // 1. Try exact matches from preference list
-        for (const name of preferredNames) {
-            const match = voices.find(v => v.name.includes(name));
-            if (match) return match;
-        }
-
-        // 2. Try to find voice with gender in name (if provided by browser)
-        // Note: Standard Web Speech API doesn't have gender field, but name often contains it.
-        const nameMatch = voices.find(v => v.name.toLowerCase().includes(lowerGender));
-        if (nameMatch) return nameMatch;
-
-        // 3. Fallback: just pick the first one if we can't find a match
-        return voices[0] || null;
-    };
-
-    // Browser Native TTS
-    const toggleAudio = () => {
-        if (isPlaying) {
-            window.speechSynthesis.cancel();
-            setIsPlaying(false);
-        } else {
-            const utterance = new SpeechSynthesisUtterance(story.content);
-            const selectedVoice = getBestVoice(voiceGender);
-            if (selectedVoice) utterance.voice = selectedVoice;
-
-            utterance.rate = 0.9; // Slower, softer
-            utterance.pitch = voiceGender === 'female' ? 1.1 : 0.9; // Higher for female, lower for male
-            utterance.onend = () => setIsPlaying(false);
-            window.speechSynthesis.speak(utterance);
-            setIsPlaying(true);
+        } catch (error) {
+            console.error("Failed to save:", error);
+        } finally {
+            setIsSaving(false);
         }
     };
 
-    // Cleanup audio on unmount
-    useEffect(() => {
-        return () => {
-            window.speechSynthesis.cancel();
-        };
-    }, []);
+    if (isLoading) {
+        return (
+            <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: '2rem', color: 'white', background: '#0f172a' }}>
+                <motion.div
+                    animate={{ rotate: 360, scale: [1, 1.2, 1] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                    style={{ fontSize: '4rem' }}
+                >
+                    ✨
+                </motion.div>
+                <motion.h2
+                    animate={{ opacity: [0.5, 1, 0.5] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                    style={{ fontSize: '1.5rem', fontWeight: 300, letterSpacing: '1px' }}
+                >
+                    {isGeneratingNew ? 'Weaving your magical story...' : 'Opening the book...'}
+                </motion.h2>
+            </div>
+        );
+    }
 
     return (
-        <main style={{
-            minHeight: '100vh',
-            display: 'flex',
-            flexDirection: 'column',
-            padding: '2rem',
-            maxWidth: '800px',
-            margin: '0 auto',
-            gap: '2rem'
-        }}>
-            <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'rgba(255,255,255,0.8)' }}>
-                <Link href={`/create?name=${name}&age=${age}&gender=${gender}&theme=${theme}`} style={{ opacity: 0.8, display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                    ← Edit Details
-                </Link>
-                <Link href="/" style={{ fontWeight: '800', fontSize: '1.2rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-                    <span style={{ fontSize: '1.5rem' }}>🤖</span> BeddyBot
-                </Link>
+        <main style={{ minHeight: '100vh', background: '#0f172a', paddingBottom: '4rem' }}>
+
+            {/* Top Bar */}
+            <nav style={{ padding: '1.5rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', maxWidth: '800px', margin: '0 auto', color: 'white' }}>
+                <button onClick={() => router.push('/dashboard')} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', opacity: 0.8 }}>
+                    <ArrowLeft size={24} /> Dashboard
+                </button>
+
+                {/* Logo */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{ fontSize: '2rem' }}>🤖</div>
+                    <span style={{ fontSize: '1.8rem', fontWeight: '800', letterSpacing: '-0.5px', color: 'white' }}>
+                        BeddyBot
+                    </span>
+                </div>
+
+
             </nav>
 
-            <div className="glass-panel" style={{
-                padding: '2.5rem',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '2rem',
-                backgroundColor: '#fff',
-                color: '#1a2238',
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+            {/* Story Container (The Book Page) */}
+            <article style={{
+                maxWidth: '800px',
+                margin: '1rem auto',
+                background: '#fffcf5', // Cream paper
+                color: '#2d3436', // Ink color
+                borderRadius: '12px', // Soft pages
+                boxShadow: '0 20px 50px -12px rgba(0,0,0,0.5)',
+                overflow: 'hidden'
             }}>
 
-                {/* Header */}
-                <div className="text-center flex-col items-center gap-2">
+                {/* Image Cover */}
+                {imageUrl && (
                     <div style={{
-                        fontSize: '0.8rem',
-                        textTransform: 'uppercase',
-                        letterSpacing: '2px',
-                        color: 'var(--color-primary)',
-                        fontWeight: 'bold',
-                        marginBottom: '0.5rem'
+                        width: '100%',
+                        aspectRatio: '16/9',
+                        position: 'relative',
+                        background: '#eee'
                     }}>
-                        Bedtime Story #{String(id).slice(0, 4)}
+                        <Image src={imageUrl} alt={title} fill style={{ objectFit: 'cover' }} unoptimized />
                     </div>
-                    <h1 style={{ fontSize: '2.5rem', fontWeight: '800', lineHeight: 1.1 }}>
-                        {story.title}
-                    </h1>
-                </div>
+                )}
 
-                {/* Illustration */}
-                <div style={{
-                    width: '100%',
-                    aspectRatio: '16/9',
-                    borderRadius: '16px',
-                    background: (bgImage && bgImage !== 'SAFETY_BLOCKED') ? `url(${bgImage}) center/cover no-repeat` : 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: 'rgba(255,255,255,0.9)',
-                    fontSize: '1.25rem',
-                    position: 'relative',
-                    overflow: 'hidden',
-                    border: '2px solid rgba(255,255,255,0.1)',
-                    boxShadow: '0 10px 30px rgba(0,0,0,0.3)'
-                }}>
-                    {bgImage === 'SAFETY_BLOCKED' ? (
-                        <div style={{ textAlign: 'center', padding: '2rem' }}>
-                            <div style={{ fontSize: '5rem', marginBottom: '1rem' }}>🛡️</div>
-                            <p style={{ fontWeight: 'bold' }}>Safety Shield Active</p>
-                            <p style={{ fontSize: '0.9rem', opacity: 0.8 }}>(Image blocked for safety)</p>
-                        </div>
-                    ) : (
-                        !bgImage && (
-                            <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                                <div style={{
-                                    fontSize: '5rem',
-                                    marginBottom: '1rem',
-                                    animation: 'bounce 2s infinite ease-in-out'
-                                }}>
-                                    🤖
-                                </div>
-                                <p style={{ fontWeight: '500', fontSize: '1.2rem' }}>
-                                    BeddyBot is painting your story...
-                                </p>
-                                <style jsx>{`
-                                    @keyframes bounce {
-                                        0%, 100% { transform: translateY(0); }
-                                        50% { transform: translateY(-20px); }
-                                    }
-                                `}</style>
-                            </div>
-                        )
-                    )}
-                </div>
-
-                {/* Audio Player Control Bar */}
-                <div style={{
-                    background: '#f3f4f6',
-                    padding: '1rem',
-                    borderRadius: '16px',
-                    border: '1px solid #e5e7eb',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '1rem'
-                }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', width: '100%' }}>
-                        <button
-                            onClick={toggleAudio}
-                            className="btn-primary"
-                            style={{
-                                padding: '0',
-                                width: '48px', height: '48px',
-                                borderRadius: '50%',
-                                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                flexShrink: 0
-                            }}
-                        >
-                            {isPlaying ? <Pause size={24} fill="currentColor" /> : <Play size={24} fill="currentColor" />}
-                        </button>
-
-                        <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: '0.9rem', fontWeight: 'bold', marginBottom: '0.2rem', display: 'flex', justifyContent: 'space-between' }}>
-                                <span>Narration ({isPlaying ? 'Playing...' : 'Ready'})</span>
-                                <div style={{ display: 'flex', gap: '0.5rem', fontSize: '0.75rem' }}>
-                                    <button
-                                        onClick={() => { window.speechSynthesis.cancel(); setIsPlaying(false); setVoiceGender('female'); }}
-                                        style={{
-                                            padding: '0.2rem 0.6rem',
-                                            borderRadius: '1rem',
-                                            background: voiceGender === 'female' ? 'var(--color-primary)' : '#ddd',
-                                            color: voiceGender === 'female' ? 'white' : '#666',
-                                            border: 'none', cursor: 'pointer',
-                                            fontWeight: 'bold'
-                                        }}>
-                                        👩 Female
-                                    </button>
-                                    <button
-                                        onClick={() => { window.speechSynthesis.cancel(); setIsPlaying(false); setVoiceGender('male'); }}
-                                        style={{
-                                            padding: '0.2rem 0.6rem',
-                                            borderRadius: '1rem',
-                                            background: voiceGender === 'male' ? 'var(--color-primary)' : '#ddd',
-                                            color: voiceGender === 'male' ? 'white' : '#666',
-                                            border: 'none', cursor: 'pointer',
-                                            fontWeight: 'bold'
-                                        }}>
-                                        👨 Male
-                                    </button>
-                                </div>
-                            </div>
-                            <div style={{ height: '6px', width: '100%', background: '#ddd', borderRadius: '3px', overflow: 'hidden' }}>
-                                <div style={{
-                                    height: '100%',
-                                    width: isPlaying ? '100%' : '0%',
-                                    background: 'var(--color-primary)',
-                                    transition: isPlaying ? 'width 20s linear' : 'width 0.2s',
-                                    animation: isPlaying ? 'progress 20s linear' : 'none'
-                                }}></div>
-                            </div>
+                <div style={{ padding: '3rem 4rem' }}>
+                    {/* Title */}
+                    <header style={{ textAlign: 'center', marginBottom: '2.5rem', borderBottom: '2px solid rgba(0,0,0,0.05)', paddingBottom: '2rem' }}>
+                        <div style={{
+                            display: 'inline-block',
+                            background: 'rgba(79, 70, 229, 0.1)',
+                            color: '#4f46e5',
+                            padding: '0.4rem 1rem',
+                            borderRadius: '50px',
+                            fontSize: '0.8rem',
+                            textTransform: 'uppercase',
+                            letterSpacing: '1px',
+                            fontWeight: '600',
+                            marginBottom: '1rem'
+                        }}>
+                            {theme || 'Magical Story'}
                         </div>
 
-                        <button style={{ padding: '0.5rem', opacity: 0.6 }}><Download size={20} /></button>
+                        <h1 style={{
+                            fontSize: '2.5rem',
+                            fontFamily: 'serif',
+                            fontWeight: '800',
+                            lineHeight: 1.2,
+                            marginBottom: '0.5rem',
+                            color: '#1a202c',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '1rem'
+                        }}>
+                            {title}
+                            <button
+                                onClick={() => setIsPlaying(!isPlaying)}
+                                style={{
+                                    background: '#4f46e5',
+                                    color: 'white',
+                                    border: 'none',
+                                    borderRadius: '50%',
+                                    width: '40px', height: '40px',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    cursor: 'pointer',
+                                    boxShadow: '0 4px 6px rgba(79, 70, 229, 0.3)'
+                                }}
+                            >
+                                {isPlaying ? <Pause size={18} fill="white" /> : <Play size={18} fill="white" />}
+                            </button>
+                        </h1>
+                    </header>
+
+                    {/* Text Content */}
+                    <div style={{
+                        fontSize: '1.25rem',
+                        lineHeight: '1.9',
+                        fontFamily: 'Georgia, serif',
+                        textAlign: 'left'
+                    }}>
+                        {content.map((paragraph, idx) => (
+                            <motion.p
+                                key={idx}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.2 + (idx * 0.1) }}
+                                style={{ marginBottom: '1.5rem' }}
+                            >
+                                {paragraph}
+                            </motion.p>
+                        ))}
+                    </div>
+
+                    {/* Actions: Save Button */}
+                    <div style={{ marginTop: '3rem', paddingTop: '2rem', borderTop: '2px solid rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'center' }}>
+                        {isGeneratingNew && childId && (
+                            <button
+                                onClick={handleManualSave}
+                                disabled={isSaved || isSaving}
+                                className="btn-primary"
+                                style={{
+                                    padding: '1rem 3rem',
+                                    fontSize: '1.1rem',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '0.8rem',
+                                    opacity: isSaved ? 0.8 : 1,
+                                    cursor: isSaved ? 'default' : 'pointer',
+                                    background: isSaved ? '#10B981' : undefined,
+                                    borderColor: isSaved ? '#10B981' : undefined
+                                }}
+                            >
+                                {isSaving ? (
+                                    'Saving...'
+                                ) : isSaved ? (
+                                    <>Saved to Library <BookOpen size={20} /></>
+                                ) : (
+                                    <>Save Story <Save size={20} /></>
+                                )}
+                            </button>
+                        )}
                     </div>
                 </div>
 
-                {/* Story Text */}
-                <div style={{
-                    fontSize: '1.2rem',
-                    lineHeight: '1.8',
-                    fontFamily: 'Georgia, serif',
-                    color: '#333'
-                }}>
-                    {story.content.split('\n').map((paragraph: string, i: number) => (
-                        paragraph.trim() && <p key={i} style={{ marginBottom: '1.25rem' }}>{paragraph}</p>
-                    ))}
-                </div>
-
-                {/* Actions */}
-                <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem', paddingTop: '2rem', borderTop: '1px solid #eee' }}>
-                    <button className="btn-base" style={{ background: '#f3f4f6', flex: 1, color: '#333' }}>
-                        <Share2 size={18} /> Share
-                    </button>
-                    <button className="btn-base" style={{ background: '#f3f4f6', flex: 1, color: '#333' }}>
-                        <BookOpen size={18} /> Save to Library
-                    </button>
-                </div>
-
-            </div>
+            </article>
         </main>
     );
 }

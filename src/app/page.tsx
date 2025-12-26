@@ -2,7 +2,11 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, Shield, Sparkles, Volume2, Star } from 'lucide-react';
 
-export default function LandingPage() {
+import { auth } from '@/auth';
+
+export default async function LandingPage() {
+  const session = await auth();
+
   return (
     <main style={{
       minHeight: '100vh',
@@ -12,6 +16,8 @@ export default function LandingPage() {
       overflowX: 'hidden',
       position: 'relative'
     }}>
+      {/* ... (Background Ambience omitted for brevity, it's fine) ... */}
+
       {/* Background Ambience */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         {/* Stars */}
@@ -70,19 +76,27 @@ export default function LandingPage() {
           <span style={{ fontSize: '2rem' }}>🤖</span> BeddyBot
         </div>
         <div style={{ display: 'flex', gap: '1rem' }}>
-          <Link href="/login" style={{
-            fontWeight: '600',
-            color: 'white',
-            textDecoration: 'none',
-            padding: '0.6rem 1.2rem',
-            opacity: 0.9,
-            transition: 'opacity 0.2s'
-          }} className="hover:opacity-100">
-            Login
-          </Link>
-          <Link href="/signup" className="btn-primary" style={{ fontSize: '0.9rem', padding: '0.6rem 1.5rem' }}>
-            Get Started
-          </Link>
+          {session ? (
+            <Link href="/dashboard" className="btn-primary" style={{ fontSize: '0.9rem', padding: '0.6rem 1.5rem', display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              Dashboard <ArrowRight size={16} />
+            </Link>
+          ) : (
+            <>
+              <Link href="/login" style={{
+                fontWeight: '600',
+                color: 'white',
+                textDecoration: 'none',
+                padding: '0.6rem 1.2rem',
+                opacity: 0.9,
+                transition: 'opacity 0.2s'
+              }} className="hover:opacity-100">
+                Login
+              </Link>
+              <Link href="/signup" className="btn-primary" style={{ fontSize: '0.9rem', padding: '0.6rem 1.5rem' }}>
+                Get Started
+              </Link>
+            </>
+          )}
         </div>
       </nav>
 
@@ -191,10 +205,13 @@ export default function LandingPage() {
       <section style={{
         padding: '4rem 2rem 6rem',
         maxWidth: '1200px',
-        margin: '0 auto',
+        margin: '2rem auto',
         width: '100%',
         position: 'relative',
-        zIndex: 1
+        zIndex: 1,
+        background: 'rgba(77, 150, 255, 0.15)', // Lighter Blue Background (Increased opacity)
+        borderRadius: '40px',
+        boxShadow: 'inset 0 0 40px rgba(77, 150, 255, 0.05)'
       }}>
         {/* Section Header */}
         <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
@@ -206,10 +223,10 @@ export default function LandingPage() {
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent'
           }}>
-            How BeddyBot Works Its Magic
+            One Click. Endless Bedtime Adventures.
           </h2>
           <p style={{ fontSize: '1.2rem', color: 'rgba(255,255,255,0.7)', maxWidth: '600px', margin: '0 auto' }}>
-            Three simple steps to create unforgettable bedtime adventures
+            With BeddyBot, customized bedtime stories are ready in seconds
           </p>
         </div>
 
@@ -242,7 +259,7 @@ export default function LandingPage() {
 
       {/* App Interface Showcase */}
       <section style={{
-        padding: '6rem 2rem',
+        padding: '2rem 2rem 6rem',
         maxWidth: '1400px',
         margin: '0 auto',
         width: '100%',
@@ -260,7 +277,10 @@ export default function LandingPage() {
             WebkitBackgroundClip: 'text',
             WebkitTextFillColor: 'transparent'
           }}>
-            See BeddyBot in Action
+            Personalized Bedtime Stories For Your Child <br />
+            <span style={{ fontSize: '1.1em', background: 'linear-gradient(135deg, #4D96FF 0%, #6BCB77 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              in Seconds.
+            </span>
           </h2>
           <p style={{ fontSize: '1.2rem', color: 'rgba(255,255,255,0.7)', maxWidth: '600px', margin: '0 auto' }}>
             From creation to bedtime magic in just a few clicks
@@ -274,7 +294,7 @@ export default function LandingPage() {
           gap: '3rem',
           alignItems: 'center'
         }}>
-          {/* Screenshot 1 - Story Form */}
+          {/* Screenshot 1 - Dashboard */}
           <div className="screenshot-float" style={{
             position: 'relative',
             borderRadius: '24px',
@@ -286,8 +306,8 @@ export default function LandingPage() {
             animationDelay: '0s'
           }}>
             <Image
-              src="/screenshot-story-form.png"
-              alt="Story Creation Interface"
+              src="/mockup-dashboard.png"
+              alt="Magical Family Dashboard"
               width={600}
               height={800}
               style={{ width: '100%', height: 'auto', display: 'block' }}
@@ -304,15 +324,91 @@ export default function LandingPage() {
               border: '1px solid rgba(255,255,255,0.1)'
             }}>
               <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
-                ✨ Personalize Every Detail
+                🏰 Your Family Kingdom
               </h3>
               <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
-                Enter your child's name, age, and favorite themes
+                Manage profiles and save favorite stories securely
               </p>
             </div>
           </div>
 
-          {/* Screenshot 2 - Story Result */}
+          {/* Screenshot 1.5 - Profile */}
+          <div className="screenshot-float" style={{
+            position: 'relative',
+            borderRadius: '24px',
+            overflow: 'hidden',
+            boxShadow: '0 30px 80px rgba(107, 203, 119, 0.3)',
+            border: '1px solid rgba(107, 203, 119, 0.2)',
+            background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.6), rgba(26, 34, 56, 0.3))',
+            animation: 'float-screenshot 6s ease-in-out infinite',
+            animationDelay: '1s'
+          }}>
+            <Image
+              src="/mockup-profile.png"
+              alt="Create Child Profiles"
+              width={600}
+              height={800}
+              style={{ width: '100%', height: 'auto', display: 'block' }}
+            />
+            <div style={{
+              position: 'absolute',
+              bottom: '1.5rem',
+              left: '1.5rem',
+              right: '1.5rem',
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(10px)',
+              padding: '1rem',
+              borderRadius: '12px',
+              border: '1px solid rgba(107, 203, 119, 0.2)'
+            }}>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
+                👤 Create Personal Profiles
+              </h3>
+              <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
+                Set the age and name for perfect stories
+              </p>
+            </div>
+          </div>
+
+          {/* Screenshot 2 - Create */}
+          <div className="screenshot-float" style={{
+            position: 'relative',
+            borderRadius: '24px',
+            overflow: 'hidden',
+            boxShadow: '0 30px 80px rgba(255, 159, 67, 0.3)',
+            border: '1px solid rgba(255, 159, 67, 0.2)',
+            background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.6), rgba(26, 34, 56, 0.3))',
+            animation: 'float-screenshot 6s ease-in-out infinite',
+            animationDelay: '2s'
+          }}>
+            <Image
+              src="/mockup-create.png"
+              alt="Easy Story Creation"
+              width={600}
+              height={800}
+              style={{ width: '100%', height: 'auto', display: 'block' }}
+            />
+            <div style={{
+              position: 'absolute',
+              bottom: '1.5rem',
+              left: '1.5rem',
+              right: '1.5rem',
+              background: 'rgba(0, 0, 0, 0.8)',
+              backdropFilter: 'blur(10px)',
+              padding: '1rem',
+              borderRadius: '12px',
+              border: '1px solid rgba(255, 159, 67, 0.2)'
+            }}>
+              <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
+                ✨ Simple Personalization
+              </h3>
+              <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
+                Just choose a theme and let magic happen
+              </p>
+            </div>
+          </div>
+
+          {/* Screenshot 3 - Result */}
           <div className="screenshot-float" style={{
             position: 'relative',
             borderRadius: '24px',
@@ -321,11 +417,11 @@ export default function LandingPage() {
             border: '1px solid rgba(77, 150, 255, 0.2)',
             background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.6), rgba(26, 34, 56, 0.3))',
             animation: 'float-screenshot 6s ease-in-out infinite',
-            animationDelay: '3s'
+            animationDelay: '4s'
           }}>
             <Image
-              src="/screenshot-story-result.png"
-              alt="Story Result Interface"
+              src="/mockup-story.png"
+              alt="Beautiful Story Results"
               width={600}
               height={800}
               style={{ width: '100%', height: 'auto', display: 'block' }}
@@ -342,15 +438,47 @@ export default function LandingPage() {
               border: '1px solid rgba(77, 150, 255, 0.2)'
             }}>
               <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
-                🎨 Beautiful Stories Come to Life
+                📚 Beautiful Adventures
               </h3>
               <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
-                Illustrated adventures with audio narration
+                Illustrated tales tailored just for them
               </p>
             </div>
           </div>
         </div>
       </section>
+
+      {/* Footer */}
+      <footer style={{
+        padding: '2rem 2rem 1rem',
+        textAlign: 'center',
+        position: 'relative',
+        zIndex: 1,
+        borderTop: '1px solid rgba(255,255,255,0.05)',
+        background: 'rgba(26, 34, 56, 0.4)'
+      }}>
+        <p style={{
+          fontSize: '0.9rem',
+          color: 'rgba(255,255,255,0.6)',
+          margin: 0
+        }}>
+          Brought to you by{' '}
+          <a
+            href="https://CoastalCreativeLab.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              color: 'var(--color-accent-blue)',
+              textDecoration: 'none',
+              fontWeight: '600',
+              transition: 'opacity 0.2s'
+            }}
+            className="hover:opacity-80"
+          >
+            CoastalCreativeLab.com
+          </a>
+        </p>
+      </footer>
     </main>
   );
 }

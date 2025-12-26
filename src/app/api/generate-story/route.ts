@@ -90,7 +90,7 @@ export async function POST(request: Request) {
                 { role: "system", content: systemPrompt },
                 {
                     role: "user",
-                    content: `${userPrompt} \n\nOutput format JSON: { "title": "The Title", "content": "The story text..." }`
+                    content: `${userPrompt} \n\nOutput format JSON: { "title": "The Title", "content": "The story text... (Use \\n\\n to separate paragraphs)" }`
                 },
             ],
             model: "gpt-4o",

@@ -9,6 +9,20 @@ import bcrypt from 'bcryptjs';
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
     ...authConfig,
+    callbacks: {
+        async jwt({ token, user }) {
+            if (user) {
+                token.id = user.id;
+            }
+            return token;
+        },
+        async session({ session, token }) {
+            if (session?.user) {
+                session.user.id = token.id as string;
+            }
+            return session;
+        },
+    },
     providers: [
         Credentials({
             async authorize(credentials) {
@@ -25,14 +39,11 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
                         const user = result[0];
 
                         if (!user) {
-                            console.log("User not found:", email);
                             return null;
                         }
 
                         const passwordsMatch = await bcrypt.compare(password, user.password);
                         if (passwordsMatch) return user;
-
-                        console.log("Invalid password for:", email);
                     }
                     return null;
                 } catch (error) {

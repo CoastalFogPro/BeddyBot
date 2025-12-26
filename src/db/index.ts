@@ -6,8 +6,9 @@ import * as schema from './schema';
 const connectionString = process.env.NETLIFY_DATABASE_URL || process.env.DATABASE_URL;
 
 if (!connectionString) {
-    throw new Error('DATABASE_URL or NETLIFY_DATABASE_URL is missing');
+    console.error('CRITICAL: DATABASE_URL is missing. DB operations will fail.');
+    // Don't throw here, or it breaks build/imports
 }
 
-const sql = neon(connectionString);
+const sql = neon(connectionString || 'postgres://placeholder');
 export const db = drizzle(sql, { schema });
