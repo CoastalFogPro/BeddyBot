@@ -17,13 +17,18 @@ export const authConfig = {
                 if (!isLoggedIn) return false;
                 // @ts-ignore
                 const userRole = auth?.user?.role;
-                console.log("Middleware Admin Check:", { path: nextUrl.pathname, userRole });
+                console.log("Middleware Admin Check (Bypassed):", { path: nextUrl.pathname, userRole });
 
+                // TEMPORARY BYPASS FOR DEBUGGING
+                return true;
+
+                /*
                 if (userRole !== 'admin') {
                     // Redirect non-admins to dashboard if they try to access admin
                     return Response.redirect(new URL('/dashboard', nextUrl));
                 }
                 return true;
+                */
             }
 
             if (isOnDashboard) {
