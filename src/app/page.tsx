@@ -53,10 +53,6 @@ export default function LandingPage() {
         }} />
       </div>
 
-      <style jsx global>{`
-        /* Styles moved to globals.css to fix SSR issue */
-      `}</style>
-
       {/* Navbar */}
       <nav style={{
         padding: '1.5rem 2rem',
