@@ -128,7 +128,7 @@ export default function LandingPage() {
             boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
           }}>
             <span style={{ width: '8px', height: '8px', background: 'var(--color-accent-green)', borderRadius: '50%', boxShadow: '0 0 10px var(--color-accent-green)', animation: 'pulse 2s infinite' }}></span>
-            System Online • v2.0
+            Personalized Stories • v2.0
           </div>
 
           {/* Main Heading */}
@@ -140,29 +140,17 @@ export default function LandingPage() {
               marginBottom: '0.5rem',
               textShadow: '0 4px 10px rgba(0,0,0,0.3)'
             }}>
-              <span className="animate-wiggle" style={{ color: '#FFD700', textShadow: '0 0 20px rgba(255, 215, 0, 0.5)' }}>Magical</span> Bedtime Stories
+              <span className="animate-wiggle" style={{ color: '#FFD700', textShadow: '0 0 20px rgba(255, 215, 0, 0.5)' }}>Your Child</span> is the Star
             </h1>
 
             <h2 style={{
               fontSize: 'clamp(1.5rem, 2.5vw, 2rem)',
               fontWeight: '700',
               color: 'rgba(255,255,255,0.9)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.5rem',
-              flexWrap: 'wrap'
+              lineHeight: '1.4',
+              marginBottom: '1rem'
             }}>
-              Lovingly Created & Read by
-              <span style={{
-                background: 'linear-gradient(135deg, #4D96FF 0%, #6BCB77 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                fontWeight: '900',
-                filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))',
-                display: 'inline-block',
-                transform: 'rotate(-2deg)',
-                padding: '0 0.5rem'
-              }}>BeddyBot</span>
+              Bedtime stories personalized with their name, age, and favorite things
             </h2>
           </div>
 
@@ -174,13 +162,13 @@ export default function LandingPage() {
             fontWeight: '500',
             marginBottom: '1rem'
           }}>
-            Create personalized adventures in seconds. Safe, educational, and fun for your little dreamers.
+            Every story is uniquely crafted for your child. They'll hear their own name, enjoy adventures tailored to their age, and explore worlds built around what they love most—from dinosaurs to princesses, space to unicorns.
           </p>
 
           {/* CTA Buttons */}
           <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
             <Link href="/signup" className="btn-primary" style={{ padding: '1rem 2.5rem', fontSize: '1.2rem', display: 'flex', gap: '0.8rem', alignItems: 'center', boxShadow: '0 10px 30px -5px rgba(255, 159, 67, 0.4)', borderRadius: '50px' }}>
-              Start My Adventure <ArrowRight size={24} />
+              Create Their Story Free <ArrowRight size={24} />
             </Link>
           </div>
         </div>
@@ -201,18 +189,18 @@ export default function LandingPage() {
       }}>
         <FeatureCard
           icon={<Sparkles size={32} color="#ff9f43" />}
-          title="Infinite Imagination"
-          desc="Never read the same story twice. From space dinos to underwater castles, if you can dream it, BeddyBot can write it."
+          title="Built Just for Them"
+          desc="Enter your child's name, age, and interests. Watch as BeddyBot creates a one-of-a-kind adventure where they're the hero, perfectly tailored to their imagination."
         />
         <FeatureCard
           icon={<Shield size={32} color="#4D96FF" />}
-          title="100% Kid-Safe Zone"
-          desc="Our advanced Safety Shield automatically blocks scary or inappropriate topics, keeping bedtime peaceful and worry-free."
+          title="Safe & Age-Appropriate"
+          desc="Every story adapts to your child's age with vocabulary and themes that are just right. Our Safety Shield ensures content is always gentle and worry-free."
         />
         <FeatureCard
           icon={<Volume2 size={32} color="#00E096" />}
-          title="Storytime Narration"
-          desc="Too tired to read? Let our friendly robot voices read the story aloud with perfect pacing and warmth."
+          title="Hear Their Name Spoken"
+          desc="BeddyBot reads the personalized story aloud with warm, friendly voices. Your child will light up hearing their own name in the adventure."
         />
       </section>
     </main>
