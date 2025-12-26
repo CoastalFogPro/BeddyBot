@@ -29,34 +29,7 @@ export default function LandingPage() {
         }} />
       </div>
 
-      <style jsx global>{`
-        @keyframes float-slow {
-          0%, 100% { transform: translateY(0px) rotate(0deg); }
-          50% { transform: translateY(-20px) rotate(1deg); }
-        }
-        @keyframes twinkle {
-          0%, 100% { opacity: 0.3; transform: scale(0.8); }
-          50% { opacity: 1; transform: scale(1.2); }
-        }
-        @keyframes pulse {
-          0%, 100% { box-shadow: 0 0 10px var(--color-accent-green); }
-          50% { box-shadow: 0 0 20px var(--color-accent-green); }
-        }
-        .star-twinkle {
-          position: absolute;
-          font-size: 1.5rem;
-          color: rgba(255,255,255,0.6);
-          animation: twinkle 4s ease-in-out infinite;
-        }
-        .hero-image-container {
-          animation: float-slow 6s ease-in-out infinite;
-          filter: drop-shadow(0 20px 40px rgba(0,0,0,0.5));
-          transition: transform 0.3s ease;
-        }
-        .hero-image-container:hover {
-           transform: scale(1.02) translateY(-5px);
-        }
-      `}</style>
+
 
       {/* Navbar */}
       <nav style={{
