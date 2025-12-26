@@ -12,25 +12,35 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
     providers: [
         Credentials({
             async authorize(credentials) {
-                const parsedCredentials = z
-                    .object({ email: z.string().email(), password: z.string().min(6) })
-                    .safeParse(credentials);
+                try {
+                    const parsedCredentials = z
+                        .object({ email: z.string().email(), password: z.string().min(6) })
+                        .safeParse(credentials);
 
-                if (parsedCredentials.success) {
-                    const { email, password } = parsedCredentials.data;
+                    if (parsedCredentials.success) {
+                        const { email, password } = parsedCredentials.data;
 
-                    // Fetch user from DB
-                    const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
-                    const user = result[0];
+                        // Fetch user from DB
+                        const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
+                        const user = result[0];
 
-                    if (!user) return null;
+                        if (!user) {
+                            console.log("User not found:", email);
+                            return null;
+                        }
 
-                    const passwordsMatch = await bcrypt.compare(password, user.password);
-                    if (passwordsMatch) return user;
+                        const passwordsMatch = await bcrypt.compare(password, user.password);
+                        if (passwordsMatch) return user;
+
+                        console.log("Invalid password for:", email);
+                    }
+                    return null;
+                } catch (error) {
+                    console.error("Auth error in authorize():", error);
+                    return null;
                 }
-                console.log('Invalid credentials');
-                return null;
             },
         }),
     ],
+    secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET,
 });
