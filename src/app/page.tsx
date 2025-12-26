@@ -73,7 +73,8 @@ export default function LandingPage() {
         justifyContent: 'center',
         padding: '4rem 2rem 6rem',
         textAlign: 'center',
-        zIndex: 1
+        zIndex: 1,
+        position: 'relative' // For absolute positioning if needed
       }}>
 
         {/* Status Badge */}
@@ -97,60 +98,80 @@ export default function LandingPage() {
           System Online • v2.0
         </div>
 
-        {/* Main Heading */}
-        <h1 style={{
-          fontSize: 'clamp(3rem, 6vw, 5rem)',
-          fontWeight: '900',
-          lineHeight: '1.1',
-          marginBottom: '1.5rem',
-          maxWidth: '900px',
-          textShadow: '0 4px 10px rgba(0,0,0,0.3)'
-        }}>
-          Magic Bedtime Stories <br />
-          <span style={{
-            background: 'linear-gradient(135deg, #fff 0%, #4D96FF 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            filter: 'drop-shadow(0 0 20px rgba(77, 150, 255, 0.3))'
-          }}> Made & Read by Robots</span>
-        </h1>
+        {/* Main Heading Group */}
+        <div style={{ marginBottom: '3rem', position: 'relative', zIndex: 10 }}>
+          <h1 style={{
+            fontSize: 'clamp(3.5rem, 7vw, 6rem)',
+            fontWeight: '900',
+            lineHeight: '1.1',
+            marginBottom: '0.5rem',
+            textShadow: '0 4px 10px rgba(0,0,0,0.3)'
+          }}>
+            <span className="animate-wiggle" style={{ color: '#FFD700', textShadow: '0 0 20px rgba(255, 215, 0, 0.5)' }}>Magical</span> Bedtime Stories
+          </h1>
 
-        <p style={{
-          fontSize: '1.4rem',
-          color: 'rgba(255,255,255,0.85)',
-          maxWidth: '650px',
-          marginBottom: '3rem',
-          lineHeight: '1.6',
-          fontWeight: '500'
-        }}>
-          Create personalized adventures in seconds. Safe, educational, and fun for your little dreamers.
-        </p>
-
-        {/* CTA Buttons */}
-        <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', justifyContent: 'center', marginBottom: '4rem' }}>
-          <Link href="/signup" className="btn-primary" style={{ padding: '1.2rem 3rem', fontSize: '1.3rem', display: 'flex', gap: '0.8rem', alignItems: 'center', boxShadow: '0 10px 30px -5px rgba(255, 159, 67, 0.4)' }}>
-            Start Creating Free <ArrowRight size={24} />
-          </Link>
+          <h2 style={{
+            fontSize: 'clamp(1.5rem, 3vw, 2.5rem)',
+            fontWeight: '700',
+            color: 'rgba(255,255,255,0.9)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '0.5rem',
+            flexWrap: 'wrap'
+          }}>
+            Lovingly Created & Read by
+            <span style={{
+              background: 'linear-gradient(135deg, #4D96FF 0%, #6BCB77 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              fontWeight: '900',
+              filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))',
+              display: 'inline-block',
+              transform: 'rotate(-2deg)',
+              padding: '0 0.5rem'
+            }}>BeddyBot</span>
+          </h2>
         </div>
 
-        {/* Hero Image */}
-        <div className="hero-image-container" style={{
-          position: 'relative',
-          width: '100%',
-          maxWidth: '500px',
-          aspectRatio: '1',
-          borderRadius: '24px',
-          overflow: 'hidden',
-          border: '4px solid rgba(255,255,255,0.1)',
-          background: 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)'
-        }}>
-          <Image
-            src="/hero-robot.png"
-            alt="BeddyBot Reading a Story"
-            fill
-            style={{ objectFit: 'contain' }}
-            priority
-          />
+        {/* Integrated Composition */}
+        <div style={{ position: 'relative', width: '100%', maxWidth: '800px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+
+          {/* Hero Image - Integrated with "portal" effect */}
+          <div className="hero-blob" style={{
+            position: 'relative',
+            width: '100%',
+            maxWidth: '450px',
+            aspectRatio: '1',
+            overflow: 'hidden',
+            background: 'radial-gradient(circle at 30% 30%, rgba(77, 150, 255, 0.2), #1a2238)',
+            boxShadow: '0 20px 50px rgba(0,0,0,0.4), inset 0 0 60px rgba(77, 150, 255, 0.3)',
+            border: '4px solid rgba(255,255,255,0.1)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: '2rem'
+          }}>
+            <Image
+              src="/hero-robot.png"
+              alt="BeddyBot Reading a Story"
+              fill
+              style={{ objectFit: 'cover', transform: 'scale(1.1)' }} // Slight zoom to fill blob
+              priority
+            />
+
+            {/* Overlay Sparkles */}
+            <div style={{ position: 'absolute', top: '20%', right: '20%', fontSize: '2rem', animation: 'twinkle 3s infinite' }}>✨</div>
+            <div style={{ position: 'absolute', bottom: '30%', left: '20%', fontSize: '1.5rem', animation: 'twinkle 4s infinite 1s' }}>⭐</div>
+          </div>
+
+          {/* CTA Buttons - Floating "above" the bottom of the image visually if we overlapped, but column is safer for mobile. */}
+          <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
+            <Link href="/signup" className="btn-primary" style={{ padding: '1.2rem 3rem', fontSize: '1.3rem', display: 'flex', gap: '0.8rem', alignItems: 'center', boxShadow: '0 10px 30px -5px rgba(255, 159, 67, 0.4)', borderRadius: '50px' }}>
+              Start My Adventure <ArrowRight size={24} />
+            </Link>
+          </div>
+
         </div>
 
       </section>
