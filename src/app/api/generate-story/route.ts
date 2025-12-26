@@ -39,19 +39,50 @@ export async function POST(request: Request) {
             );
         }
 
-        let systemPrompt = "You are a creative bedtime story generator for children.";
+        // 3. Dynamic Story DNA (To prevent repetitive templates)
+        const archetypes = [
+            "The Lost Treasure", "The Unexpected Friend", "The Big Race", "The Magical Mistake",
+            "The Secret Door", "The Helping Hand", "The Brave Journey", "The Missing Color",
+            "The Flying Invention", "The Moon Party"
+        ];
+        const qualities = [
+            "Curiosity", "Kindness", "Bravery", "Creativity", "Patience", "Teamwork"
+        ];
+
+        const randomArchetype = archetypes[Math.floor(Math.random() * archetypes.length)];
+        const randomQuality = qualities[Math.floor(Math.random() * qualities.length)];
+
+        let systemPrompt = "You are a creative, highly imaginative children's author who writes unique, non-repetitive stories.";
         let userPrompt = "";
 
-        // Age-specific logic
+        // Age-specific logic with DNA injection
         if (ageNum < 3) {
-            systemPrompt += " Write a gentle, soothing nursery rhyme (8-12 lines). output only the title and the content in JSON format.";
-            userPrompt = `Write a bedtime rhyme for a ${age}-year-old ${gender} named ${name} about ${theme}. Make it sweet and simple.`;
-        } else if (ageNum <= 7) {
-            systemPrompt += " Write a whimsical, fun short story (approx 150 words). output only the title and the content in JSON format.";
-            userPrompt = `Write a magical bedtime story for a ${age}-year-old ${gender} named ${name} about ${theme}. Include a friendly magical creature.`;
+            // Nursery Rhymes need less complex plot, but we can still vary the tone/focus
+            systemPrompt += " Write a gentle, soothing nursery rhyme (8-12 lines). Output only the title and the content in JSON format.";
+            userPrompt = `Write a unique bedtime rhyme for a ${age}-year-old ${gender} named ${name} about ${theme}. Focus on the feeling of ${randomQuality}. Make it sweet and simple.`;
+        } else if (ageNum <= 6) {
+            // Short stories
+            systemPrompt += " Write a whimsical, fun short story (approx 200 words). Avoid generic 'Once upon a time' openings if possible. Output only the title and the content in JSON format.";
+            userPrompt = `Write a unique magical bedtime story for a ${age}-year-old ${gender} named ${name} about ${theme}.
+             
+             STORY DNA:
+             - Plot Archetype: ${randomArchetype}
+             - Key Lesson: ${randomQuality}
+             - Character Name: ${name}
+             - Theme: ${theme}
+             
+             Make the story feel fresh and specific to this plot archetype.`;
         } else {
-            systemPrompt += " Write an engaging adventure story (approx 350-400 words). output only the title and the content in JSON format.";
-            userPrompt = `Write an exciting adventure story for a ${age}-year-old ${gender} named ${name} about ${theme}. The character should solve a problem using kindness or courage.`;
+            // Older kids (up to 10)
+            systemPrompt += " Write an engaging, well-structured adventure story (approx 400 words) with clear rising action and resolution. Output only the title and the content in JSON format.";
+            userPrompt = `Write an exciting adventure story for a ${age}-year-old ${gender} named ${name} about ${theme}.
+             
+             STORY DNA:
+             - Core Conflict: ${randomArchetype}
+             - Hero's Strength: ${randomQuality}
+             - Setting: A unique version of ${theme}
+             
+             Ensure the character solves a specific problem using their specific strength. Avoid generic endings.`;
         }
 
         const completion = await openai.chat.completions.create({
@@ -63,6 +94,7 @@ export async function POST(request: Request) {
                 },
             ],
             model: "gpt-4o",
+            temperature: 0.9, // Higher creativity
             response_format: { type: "json_object" },
         });
 

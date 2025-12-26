@@ -9,17 +9,35 @@ export default function StoryForm() {
         name: 'James',
         age: '5',
         gender: 'Boy',
-        theme: 'Space Adventure'
+        theme: 'Space & Rockets'
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Theme Logic
+    const THEMES = [
+        "Princesses & Castles", "Fairies & Magic Gardens", "Unicorns & Magical Horses",
+        "Mermaids & the Ocean", "Dolls & Toy Adventures", "Butterflies, Flowers & Nature",
+        "Space & Rockets", "Dinosaurs", "Trains, Cars & Trucks", "Pirates & Treasure Islands",
+        "Knights & Dragons", "Jungle Animals", "Animals", "Magic", "Underwater Worlds",
+        "Outer Space", "Adventure", "Friendship", "Other"
+    ];
+    const [selectedTheme, setSelectedTheme] = useState(THEMES[6]); // Default: Space
+    const [customTheme, setCustomTheme] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
         // Simulate generation delay
         await new Promise(resolve => setTimeout(resolve, 2000));
+
+        // Final theme is either selected or custom
+        const finalTheme = selectedTheme === 'Other' ? customTheme : selectedTheme;
+
         // Navigate to story view with query params
-        const params = new URLSearchParams(formData);
+        const params = new URLSearchParams({
+            ...formData,
+            theme: finalTheme
+        });
         router.push(`/story/123?${params.toString()}`);
     };
 
@@ -56,7 +74,7 @@ export default function StoryForm() {
             </div>
 
             <div style={{ display: 'flex', gap: '1rem' }}>
-                {/* Age */}
+                {/* Age (1-10 Only) */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
                     <label style={{ fontWeight: '700', fontSize: '0.95rem', color: 'var(--color-primary)', textTransform: 'uppercase' }}>Age Level</label>
                     <div style={{ position: 'relative' }}>
@@ -66,7 +84,7 @@ export default function StoryForm() {
                             className="input-base"
                             style={{ appearance: 'none', cursor: 'pointer' }}
                         >
-                            {[...Array(12)].map((_, i) => (
+                            {[...Array(10)].map((_, i) => (
                                 <option key={i} value={i + 1} style={{ color: 'black' }}>{i + 1} Years</option>
                             ))}
                         </select>
@@ -77,7 +95,7 @@ export default function StoryForm() {
                     </div>
                 </div>
 
-                {/* Gender */}
+                {/* Gender (Boy/Girl Only) */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', flex: 1 }}>
                     <label style={{ fontWeight: '700', fontSize: '0.95rem', color: 'var(--color-primary)', textTransform: 'uppercase' }}>Hero Type</label>
                     <div style={{ position: 'relative' }}>
@@ -89,7 +107,6 @@ export default function StoryForm() {
                         >
                             <option style={{ color: 'black' }}>Boy</option>
                             <option style={{ color: 'black' }}>Girl</option>
-                            <option style={{ color: 'black' }}>Non-binary</option>
                         </select>
                         <div style={{
                             position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)',
@@ -99,16 +116,38 @@ export default function StoryForm() {
                 </div>
             </div>
 
-            {/* Theme */}
+            {/* Theme Dropdown */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                 <label style={{ fontWeight: '700', fontSize: '0.95rem', color: 'var(--color-primary)', textTransform: 'uppercase' }}>Adventure Theme</label>
-                <input
-                    type="text"
-                    value={formData.theme}
-                    onChange={(e) => setFormData({ ...formData, theme: e.target.value })}
-                    className="input-base"
-                    placeholder="e.g. Robot Dinosaurs on Mars"
-                />
+                <div style={{ position: 'relative' }}>
+                    <select
+                        value={selectedTheme}
+                        onChange={(e) => setSelectedTheme(e.target.value)}
+                        className="input-base"
+                        style={{ appearance: 'none', cursor: 'pointer', width: '100%' }}
+                    >
+                        {THEMES.map((t) => (
+                            <option key={t} value={t} style={{ color: 'black' }}>{t}</option>
+                        ))}
+                    </select>
+                    <div style={{
+                        position: 'absolute', right: '1rem', top: '50%', transform: 'translateY(-50%)',
+                        pointerEvents: 'none', color: 'white', fontSize: '0.8rem'
+                    }}>▼</div>
+                </div>
+
+                {/* Custom Theme Input (Only if 'Other' is selected) */}
+                {selectedTheme === 'Other' && (
+                    <input
+                        type="text"
+                        value={customTheme}
+                        onChange={(e) => setCustomTheme(e.target.value)}
+                        className="input-base"
+                        placeholder="Type your own theme..."
+                        style={{ marginTop: '0.5rem', animation: 'fadeIn 0.3s ease-out' }}
+                        autoFocus
+                    />
+                )}
             </div>
 
             <button
@@ -123,7 +162,6 @@ export default function StoryForm() {
             >
                 {isSubmitting ? 'Initializing...' : '🚀 Launch Story'}
             </button>
-
         </form>
     );
 }
