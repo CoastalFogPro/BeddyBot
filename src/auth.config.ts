@@ -16,7 +16,10 @@ export const authConfig = {
             if (isOnAdmin) {
                 if (!isLoggedIn) return false;
                 // @ts-ignore
-                if (auth?.user?.role !== 'admin') {
+                const userRole = auth?.user?.role;
+                console.log("Middleware Admin Check:", { path: nextUrl.pathname, userRole });
+
+                if (userRole !== 'admin') {
                     // Redirect non-admins to dashboard if they try to access admin
                     return Response.redirect(new URL('/dashboard', nextUrl));
                 }
