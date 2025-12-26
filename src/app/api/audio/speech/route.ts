@@ -23,7 +23,7 @@ export async function POST(req: Request) {
 
         const mp3 = await openai.audio.speech.create({
             model: "tts-1", // Standard models are faster and less prone to timeouts
-            voice: "shimmer",
+            voice: "nova",
             input: safeText,
         });
 
