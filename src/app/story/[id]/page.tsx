@@ -89,9 +89,9 @@ export default function StoryView() {
             await audio.play();
             setIsPlaying(true);
 
-        } catch (error) {
+        } catch (error: any) {
             console.error("Audio generation failed", error);
-            alert("Sorry, I couldn't read the story right now. Please try again.");
+            alert(`Sorry, I couldn't read the story right now. Error: ${error.message}`);
         } finally {
             setAudioLoading(false);
         }
