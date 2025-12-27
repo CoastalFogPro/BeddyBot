@@ -260,7 +260,7 @@ export default async function LandingPage() {
       {/* How It Works Banner */}
       <section style={{
         width: '100%',
-        margin: '0 0 6rem',
+        margin: '0 0 1rem',
         position: 'relative',
         zIndex: 1
       }}>
