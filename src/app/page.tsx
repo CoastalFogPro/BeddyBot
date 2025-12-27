@@ -259,14 +259,14 @@ export default async function LandingPage() {
 
       {/* How It Works Banner */}
       <section style={{
-        maxWidth: '1600px',
+        maxWidth: '1200px',
         width: '100%',
         margin: '0 auto 2rem',
         padding: '0 1.5rem',
         position: 'relative',
         zIndex: 1
       }}>
-        <div className="screenshot-float">
+        <div style={{ animation: 'float 6s ease-in-out infinite' }}>
           <Image
             src="/how-it-works-banner.jpg"
             alt="How BeddyBot Works: Create, Pick Theme, Enjoy"
