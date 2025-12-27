@@ -262,7 +262,6 @@ export default async function LandingPage() {
         maxWidth: '1200px',
         width: '100%',
         margin: '0 auto 2rem',
-        padding: '0 1.5rem',
         position: 'relative',
         zIndex: 1
       }}>
