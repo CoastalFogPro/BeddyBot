@@ -259,24 +259,20 @@ export default async function LandingPage() {
 
       {/* How It Works Banner */}
       <section style={{
-        maxWidth: '1200px',
-        margin: '0 auto 6rem',
-        padding: '0 2rem',
         width: '100%',
+        margin: '0 0 6rem',
         position: 'relative',
         zIndex: 1
       }}>
         <Image
-          src="/how-it-works-banner.jpg" // Renamed from uploaded file
+          src="/how-it-works-banner.jpg"
           alt="How BeddyBot Works: Create, Pick Theme, Enjoy"
-          width={1400}
-          height={700}
+          width={1920}
+          height={800}
           style={{
             width: '100%',
             height: 'auto',
-            borderRadius: '40px',
-            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.4)',
-            border: '1px solid rgba(255, 255, 255, 0.1)'
+            display: 'block'
           }}
         />
       </section>
