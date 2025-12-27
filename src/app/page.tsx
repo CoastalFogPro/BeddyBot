@@ -257,6 +257,30 @@ export default async function LandingPage() {
         </div>
       </section>
 
+      {/* How It Works Banner */}
+      <section style={{
+        maxWidth: '1200px',
+        margin: '0 auto 6rem',
+        padding: '0 2rem',
+        width: '100%',
+        position: 'relative',
+        zIndex: 1
+      }}>
+        <Image
+          src="/how-it-works-banner.jpg" // Renamed from uploaded file
+          alt="How BeddyBot Works: Create, Pick Theme, Enjoy"
+          width={1400}
+          height={700}
+          style={{
+            width: '100%',
+            height: 'auto',
+            borderRadius: '40px',
+            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.4)',
+            border: '1px solid rgba(255, 255, 255, 0.1)'
+          }}
+        />
+      </section>
+
       {/* App Interface Showcase */}
       <section style={{
         padding: '2rem 2rem 6rem',
