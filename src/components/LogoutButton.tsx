@@ -6,7 +6,7 @@ import { LogOut } from "lucide-react";
 export default function LogoutButton() {
     return (
         <button
-            onClick={() => signOut({ callbackUrl: "/" })}
+            onClick={() => signOut({ callbackUrl: "https://beddybot.com" })}
             style={{
                 background: 'rgba(255,255,255,0.1)',
                 border: 'none',
