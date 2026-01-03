@@ -41,6 +41,10 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: 'Email already exists' }, { status: 400 });
         }
 
+        if (!password || password.length < 6) {
+            return NextResponse.json({ error: 'Password must be at least 6 characters long' }, { status: 400 });
+        }
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
         await db.insert(users).values({
