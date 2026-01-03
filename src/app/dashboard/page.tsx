@@ -10,6 +10,8 @@ import AddChildModal from '@/components/Dashboard/AddChildModal';
 import { Plus, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+import UsageIndicator from '@/components/Dashboard/UsageIndicator';
+
 interface Child {
     id: string;
     name: string;
@@ -20,22 +22,22 @@ interface Child {
 export default function Dashboard() {
     const [children, setChildren] = useState<Child[]>([]);
     const [stories, setStories] = useState<any[]>([]);
+    const [userStatus, setUserStatus] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const fetchData = async () => {
         try {
-            const [childRes, storyRes] = await Promise.all([
+            const [childRes, storyRes, statusRes] = await Promise.all([
                 fetch('/api/children'),
-                fetch('/api/stories') // Fetch all user stories
+                fetch('/api/stories'),
+                fetch('/api/user/status')
             ]);
 
-            if (childRes.ok) {
-                setChildren(await childRes.json());
-            }
-            if (storyRes.ok) {
-                setStories(await storyRes.json());
-            }
+            if (childRes.ok) setChildren(await childRes.json());
+            if (storyRes.ok) setStories(await storyRes.json());
+            if (statusRes.ok) setUserStatus(await statusRes.json());
+
         } catch (e) {
             console.error("Failed to fetch dashboard data", e);
         } finally {
@@ -49,6 +51,10 @@ export default function Dashboard() {
             if (res.ok) {
                 // Remove from local state immediately for speed
                 setStories((prev: any[]) => prev.filter((s: any) => s.id !== storyId));
+                // Update count locally to reflect change immediately
+                if (userStatus) {
+                    setUserStatus((prev: any) => ({ ...prev, storyCount: Math.max(0, prev.storyCount - 1) }));
+                }
             } else {
                 alert("Failed to delete story.");
             }
@@ -59,6 +65,21 @@ export default function Dashboard() {
 
     useEffect(() => {
         fetchData();
+
+        // Check for checkout success
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('success')) {
+            fetch('/api/stripe/sync', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    console.log("Auto-Synced Subscription:", data);
+                    // Re-fetch user status after sync
+                    fetch('/api/user/status')
+                        .then(r => r.json())
+                        .then(status => setUserStatus(status));
+                })
+                .catch(err => console.error("Sync failed", err));
+        }
     }, []);
 
     return (
@@ -74,12 +95,24 @@ export default function Dashboard() {
                     <span style={{ fontSize: '1.8rem' }}>🤖</span> BeddyBot
                 </div>
                 <div className="flex items-center gap-4">
+                    <Link href="/dashboard/subscription" className="hover:text-blue-400 transition-colors">
+                        Membership
+                    </Link>
                     <AdminLink />
                     <LogoutButton />
                 </div>
             </nav>
 
             <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem' }}>
+
+                {/* Usage Indicator */}
+                {userStatus && (
+                    <UsageIndicator
+                        isPremium={userStatus.isPremium}
+                        count={userStatus.storyCount}
+                        limit={userStatus.limit}
+                    />
+                )}
 
                 {/* Hero Greeting */}
                 <header style={{ marginBottom: '3rem', textAlign: 'center' }}>
@@ -192,6 +225,6 @@ export default function Dashboard() {
                     fetchData(); // Refresh list
                 }}
             />
-        </main>
+        </main >
     );
 }

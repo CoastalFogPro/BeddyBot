@@ -321,156 +321,239 @@ export default async function LandingPage() {
           alignItems: 'center'
         }}>
           {/* Screenshot 1 - Dashboard */}
-          <div className="screenshot-float" style={{
-            position: 'relative',
-            borderRadius: '24px',
-            overflow: 'hidden',
-            boxShadow: '0 30px 80px rgba(0, 0, 0, 0.5)',
-            border: '1px solid rgba(255,255,255,0.1)',
-            background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.6), rgba(26, 34, 56, 0.3))',
-            animation: 'float-screenshot 6s ease-in-out infinite',
-            animationDelay: '0s'
-          }}>
-            <Image
-              src="/mockup-dashboard.png"
-              alt="Magical Family Dashboard"
-              width={600}
-              height={800}
-              style={{ width: '100%', height: 'auto', display: 'block' }}
-            />
-            <div style={{
-              position: 'absolute',
-              bottom: '1.5rem',
-              left: '1.5rem',
-              right: '1.5rem',
-              background: 'rgba(0, 0, 0, 0.8)',
-              backdropFilter: 'blur(10px)',
-              padding: '1rem',
-              borderRadius: '12px',
-              border: '1px solid rgba(255,255,255,0.1)'
+          <div style={{ animation: 'float-screenshot 6s ease-in-out infinite', animationDelay: '0s' }}>
+            <div className="screenshot-float" style={{
+              position: 'relative',
+              borderRadius: '24px',
+              overflow: 'hidden',
+              boxShadow: '0 30px 80px rgba(0, 0, 0, 0.5)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.6), rgba(26, 34, 56, 0.3))'
             }}>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
-                🏰 Your Family Kingdom
-              </h3>
-              <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
-                Manage profiles and save favorite stories securely
-              </p>
+              <Image
+                src="/mockup-dashboard.png"
+                alt="Magical Family Dashboard"
+                width={600}
+                height={800}
+                style={{ width: '100%', height: 'auto', display: 'block' }}
+              />
+              <div style={{
+                position: 'absolute',
+                bottom: '1.5rem',
+                left: '1.5rem',
+                right: '1.5rem',
+                background: 'rgba(0, 0, 0, 0.8)',
+                backdropFilter: 'blur(10px)',
+                padding: '1rem',
+                borderRadius: '12px',
+                border: '1px solid rgba(255,255,255,0.1)'
+              }}>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
+                  🏰 Your Family Kingdom
+                </h3>
+                <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
+                  Manage profiles and save favorite stories securely
+                </p>
+              </div>
             </div>
           </div>
 
           {/* Screenshot 1.5 - Profile */}
-          <div className="screenshot-float" style={{
-            position: 'relative',
-            borderRadius: '24px',
-            overflow: 'hidden',
-            boxShadow: '0 30px 80px rgba(107, 203, 119, 0.3)',
-            border: '1px solid rgba(107, 203, 119, 0.2)',
-            background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.6), rgba(26, 34, 56, 0.3))',
-            animation: 'float-screenshot 6s ease-in-out infinite',
-            animationDelay: '1s'
-          }}>
-            <Image
-              src="/mockup-profile.png"
-              alt="Create Child Profiles"
-              width={600}
-              height={800}
-              style={{ width: '100%', height: 'auto', display: 'block' }}
-            />
-            <div style={{
-              position: 'absolute',
-              bottom: '1.5rem',
-              left: '1.5rem',
-              right: '1.5rem',
-              background: 'rgba(0, 0, 0, 0.8)',
-              backdropFilter: 'blur(10px)',
-              padding: '1rem',
-              borderRadius: '12px',
-              border: '1px solid rgba(107, 203, 119, 0.2)'
+          <div style={{ animation: 'float-screenshot 6s ease-in-out infinite', animationDelay: '1s' }}>
+            <div className="screenshot-float" style={{
+              position: 'relative',
+              borderRadius: '24px',
+              overflow: 'hidden',
+              boxShadow: '0 30px 80px rgba(107, 203, 119, 0.3)',
+              border: '1px solid rgba(107, 203, 119, 0.2)',
+              background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.6), rgba(26, 34, 56, 0.3))'
             }}>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
-                👤 Create Personal Profiles
-              </h3>
-              <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
-                Set the age and name for perfect stories
-              </p>
+              <Image
+                src="/mockup-profile.png"
+                alt="Create Child Profiles"
+                width={600}
+                height={800}
+                style={{ width: '100%', height: 'auto', display: 'block' }}
+              />
+              <div style={{
+                position: 'absolute',
+                bottom: '1.5rem',
+                left: '1.5rem',
+                right: '1.5rem',
+                background: 'rgba(0, 0, 0, 0.8)',
+                backdropFilter: 'blur(10px)',
+                padding: '1rem',
+                borderRadius: '12px',
+                border: '1px solid rgba(107, 203, 119, 0.2)'
+              }}>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
+                  👤 Create Personal Profiles
+                </h3>
+                <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
+                  Set the age and name for perfect stories
+                </p>
+              </div>
             </div>
           </div>
 
           {/* Screenshot 2 - Create */}
-          <div className="screenshot-float" style={{
-            position: 'relative',
-            borderRadius: '24px',
-            overflow: 'hidden',
-            boxShadow: '0 30px 80px rgba(255, 159, 67, 0.3)',
-            border: '1px solid rgba(255, 159, 67, 0.2)',
-            background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.6), rgba(26, 34, 56, 0.3))',
-            animation: 'float-screenshot 6s ease-in-out infinite',
-            animationDelay: '2s'
-          }}>
-            <Image
-              src="/mockup-create.png"
-              alt="Easy Story Creation"
-              width={600}
-              height={800}
-              style={{ width: '100%', height: 'auto', display: 'block' }}
-            />
-            <div style={{
-              position: 'absolute',
-              bottom: '1.5rem',
-              left: '1.5rem',
-              right: '1.5rem',
-              background: 'rgba(0, 0, 0, 0.8)',
-              backdropFilter: 'blur(10px)',
-              padding: '1rem',
-              borderRadius: '12px',
-              border: '1px solid rgba(255, 159, 67, 0.2)'
+          <div style={{ animation: 'float-screenshot 6s ease-in-out infinite', animationDelay: '2s' }}>
+            <div className="screenshot-float" style={{
+              position: 'relative',
+              borderRadius: '24px',
+              overflow: 'hidden',
+              boxShadow: '0 30px 80px rgba(255, 159, 67, 0.3)',
+              border: '1px solid rgba(255, 159, 67, 0.2)',
+              background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.6), rgba(26, 34, 56, 0.3))'
             }}>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
-                ✨ Simple Personalization
-              </h3>
-              <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
-                Just choose a theme and let magic happen
-              </p>
+              <Image
+                src="/mockup-create.png"
+                alt="Easy Story Creation"
+                width={600}
+                height={800}
+                style={{ width: '100%', height: 'auto', display: 'block' }}
+              />
+              <div style={{
+                position: 'absolute',
+                bottom: '1.5rem',
+                left: '1.5rem',
+                right: '1.5rem',
+                background: 'rgba(0, 0, 0, 0.8)',
+                backdropFilter: 'blur(10px)',
+                padding: '1rem',
+                borderRadius: '12px',
+                border: '1px solid rgba(255, 159, 67, 0.2)'
+              }}>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
+                  ✨ Simple Personalization
+                </h3>
+                <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
+                  Just choose a theme and let magic happen
+                </p>
+              </div>
             </div>
           </div>
 
           {/* Screenshot 3 - Result */}
-          <div className="screenshot-float" style={{
-            position: 'relative',
-            borderRadius: '24px',
-            overflow: 'hidden',
-            boxShadow: '0 30px 80px rgba(77, 150, 255, 0.3)',
-            border: '1px solid rgba(77, 150, 255, 0.2)',
-            background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.6), rgba(26, 34, 56, 0.3))',
-            animation: 'float-screenshot 6s ease-in-out infinite',
-            animationDelay: '4s'
-          }}>
-            <Image
-              src="/mockup-story.png"
-              alt="Beautiful Story Results"
-              width={600}
-              height={800}
-              style={{ width: '100%', height: 'auto', display: 'block' }}
-            />
-            <div style={{
-              position: 'absolute',
-              bottom: '1.5rem',
-              left: '1.5rem',
-              right: '1.5rem',
-              background: 'rgba(0, 0, 0, 0.8)',
-              backdropFilter: 'blur(10px)',
-              padding: '1rem',
-              borderRadius: '12px',
-              border: '1px solid rgba(77, 150, 255, 0.2)'
+          <div style={{ animation: 'float-screenshot 6s ease-in-out infinite', animationDelay: '4s' }}>
+            <div className="screenshot-float" style={{
+              position: 'relative',
+              borderRadius: '24px',
+              overflow: 'hidden',
+              boxShadow: '0 30px 80px rgba(77, 150, 255, 0.3)',
+              border: '1px solid rgba(77, 150, 255, 0.2)',
+              background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.6), rgba(26, 34, 56, 0.3))'
             }}>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
-                📚 Beautiful Adventures
-              </h3>
-              <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
-                Illustrated tales tailored just for them
-              </p>
+              <Image
+                src="/mockup-story.png"
+                alt="Beautiful Story Results"
+                width={600}
+                height={800}
+                style={{ width: '100%', height: 'auto', display: 'block' }}
+              />
+              <div style={{
+                position: 'absolute',
+                bottom: '1.5rem',
+                left: '1.5rem',
+                right: '1.5rem',
+                background: 'rgba(0, 0, 0, 0.8)',
+                backdropFilter: 'blur(10px)',
+                padding: '1rem',
+                borderRadius: '12px',
+                border: '1px solid rgba(77, 150, 255, 0.2)'
+              }}>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
+                  📚 Beautiful Adventures
+                </h3>
+                <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
+                  Illustrated tales tailored just for them
+                </p>
+              </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Pricing / Plans Section */}
+      <section style={{
+        padding: '4rem 2rem 6rem',
+        maxWidth: '1200px',
+        margin: '0 auto',
+        width: '100%',
+        position: 'relative',
+        zIndex: 1
+      }}>
+        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+          <h2 style={{
+            fontSize: 'clamp(2rem, 4vw, 3rem)',
+            fontWeight: '800',
+            marginBottom: '1rem',
+            color: 'white'
+          }}>
+            Choose Your Adventure
+          </h2>
+          <p style={{ fontSize: '1.2rem', color: 'rgba(255,255,255,0.7)', maxWidth: '600px', margin: '0 auto' }}>
+            Start for free, then unlock unlimited magic.
+          </p>
+        </div>
+
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: '2rem',
+          maxWidth: '1000px',
+          margin: '0 auto'
+        }}>
+          {/* Free Plan */}
+          <PricingCard
+            title="Starter"
+            price="Free"
+            description="Perfect for one bedtime story."
+            features={[
+              "1 Personalized Story",
+              "Standard Themes",
+              "Standard Audio"
+            ]}
+            buttonText="Create Free Account"
+            link="/signup"
+            isPopular={false}
+          />
+
+          {/* Monthly Plan */}
+          <PricingCard
+            title="Monthly"
+            price="$9.99"
+            period="/month"
+            description="Unlimited stories for active imaginations."
+            features={[
+              "Unlimited Stories Generated",
+              "Save 30 Stories Forever",
+              "Priority Generation",
+              "Access to All Future Story Themes"
+            ]}
+            buttonText="Start Monthly"
+            link="/signup?plan=monthly"
+            isPopular={false}
+            accentColor="#4D96FF"
+          />
+
+          {/* Yearly Plan */}
+          <PricingCard
+            title="Yearly"
+            price="$49.99"
+            period="/year"
+            description="Best value for year-round magic."
+            features={[
+              "Everything in Monthly",
+              "2 Months Free",
+              "Early Access to New Features",
+              "VIP Support"
+            ]}
+            buttonText="Start Yearly"
+            link="/signup?plan=yearly"
+            isPopular={true}
+            accentColor="#FFD700"
+          />
         </div>
       </section>
 
@@ -574,6 +657,73 @@ function FeatureCard({ icon, title, desc, accentColor }: { icon: string, title: 
       }}>
         {desc}
       </p>
+    </div>
+  );
+}
+
+function PricingCard({ title, price, period, description, features, buttonText, link, isPopular, accentColor = '#ffffff' }: any) {
+  return (
+    <div style={{
+      background: 'rgba(26, 34, 56, 0.6)',
+      border: isPopular ? `2px solid ${accentColor}` : '1px solid rgba(255,255,255,0.1)',
+      borderRadius: '24px',
+      padding: '2.5rem',
+      display: 'flex',
+      flexDirection: 'column',
+      position: 'relative',
+      overflow: 'hidden',
+      transform: isPopular ? 'scale(1.05)' : 'none',
+      boxShadow: isPopular ? `0 20px 40px -10px ${accentColor}40` : 'none',
+      zIndex: isPopular ? 2 : 1
+    }}>
+      {isPopular && (
+        <div style={{
+          position: 'absolute',
+          top: '0',
+          right: '0',
+          background: accentColor,
+          color: 'black',
+          padding: '0.5rem 1.5rem',
+          borderBottomLeftRadius: '20px',
+          fontWeight: 'bold',
+          fontSize: '0.8rem'
+        }}>
+          POPULAR
+        </div>
+      )}
+
+      <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem', color: isPopular ? accentColor : 'white' }}>{title}</h3>
+      <div style={{ display: 'flex', alignItems: 'baseline', marginBottom: '1rem' }}>
+        <span style={{ fontSize: '2.5rem', fontWeight: '800' }}>{price}</span>
+        {period && <span style={{ opacity: 0.7, marginLeft: '5px' }}>{period}</span>}
+      </div>
+      <p style={{ opacity: 0.7, marginBottom: '2rem', minHeight: '3rem' }}>{description}</p>
+
+      <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem', flex: 1 }}>
+        {features.map((feature: string, i: number) => (
+          <li key={i} style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem', opacity: 0.9 }}>
+            <span style={{ marginRight: '10px', color: isPopular ? accentColor : '#4bb543' }}>✓</span>
+            {feature}
+          </li>
+        ))}
+      </ul>
+
+      <Link href={link} style={{ textDecoration: 'none' }}>
+        <button style={{
+          width: '100%',
+          padding: '1rem',
+          borderRadius: '12px',
+          border: 'none',
+          background: isPopular ? accentColor : 'rgba(255,255,255,0.1)',
+          color: isPopular ? 'black' : 'white',
+          fontWeight: 'bold',
+          cursor: 'pointer',
+          transition: 'transform 0.2s',
+          fontSize: '1rem'
+        }}>
+          {buttonText}
+        </button>
+      </Link>
     </div>
   );
 }

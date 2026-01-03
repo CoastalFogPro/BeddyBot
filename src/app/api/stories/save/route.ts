@@ -1,6 +1,7 @@
 import { auth } from '@/auth';
 import { db } from '@/db';
-import { stories } from '@/db/schema';
+import { stories, users } from '@/db/schema';
+import { eq } from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
@@ -15,6 +16,24 @@ export async function POST(req: Request) {
 
         if (!title || !content || !childId) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+        }
+
+        // Fetch user subscription status
+        const [dbUser] = await db.select().from(users).where(eq(users.id, session.user.id)).limit(1);
+
+        // Count existing stories
+        const userStrategies = await db.select({ id: stories.id }).from(stories).where(eq(stories.userId, session.user.id));
+        const storyCount = userStrategies.length;
+
+        // Limit Logic
+        const isPremium = dbUser.subscriptionStatus === 'active';
+        const limit = isPremium ? 30 : 1;
+
+        if (storyCount >= limit) {
+            return NextResponse.json({
+                error: isPremium ? 'Story limit reached (30). Please contact support for more.' : 'Free limit reached. Upgrade to create more stories!',
+                code: 'LIMIT_REACHED'
+            }, { status: 403 });
         }
 
         let finalImageUrl = imageUrl;

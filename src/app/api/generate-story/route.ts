@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { containsBlockedTerm } from '@/lib/safety/blocked_terms';
+import { auth } from '@/auth';
+import { db } from '@/db';
+import { stories, users } from '@/db/schema';
+import { eq } from 'drizzle-orm';
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY || 'dummy-key-for-build',
@@ -10,6 +14,31 @@ export async function POST(request: Request) {
     if (!process.env.OPENAI_API_KEY) {
         return NextResponse.json({ error: 'OpenAI API Key not configured' }, { status: 500 });
     }
+
+    // --- SUBSCRIPTION CHECK (PREVENT COST) ---
+    const session = await auth();
+    if (!session?.user?.id) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    // 1. Get User Status
+    const [dbUser] = await db.select().from(users).where(eq(users.id, session.user.id)).limit(1);
+
+    // 2. Count Stories
+    const userStrategies = await db.select({ id: stories.id }).from(stories).where(eq(stories.userId, session.user.id));
+    const storyCount = userStrategies.length;
+
+    // 3. Define Limits
+    const isPremium = dbUser?.subscriptionStatus === 'active';
+    const isAdmin = dbUser?.role === 'admin';
+    const limit = isAdmin ? 999999 : (isPremium ? 30 : 1);
+
+    if (storyCount >= limit) {
+        return NextResponse.json({
+            error: isPremium ? 'Story limit reached (30).' : 'Free limit reached. Upgrade to create more!',
+            code: 'LIMIT_REACHED'
+        }, { status: 403 });
+    }
+    // -----------------------------------------
 
     try {
         const { name, age, gender, theme } = await request.json();

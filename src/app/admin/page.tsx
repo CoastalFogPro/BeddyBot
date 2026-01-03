@@ -15,39 +15,57 @@ interface User {
     email: string;
     role: string;
     createdAt: string;
+    subscriptionStatus?: string;
+}
+
+interface Stats {
+    totalUsers: number;
+    totalStories: number;
+    activeSubscriptions: number;
 }
 
 export default function AdminDashboard() {
     const router = useRouter();
     const [users, setUsers] = useState<User[]>([]);
+    const [stats, setStats] = useState<Stats | null>(null);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [, setError] = useState('');
 
-    const fetchUsers = async () => {
+    const fetchData = async () => {
         try {
-            const res = await fetch('/api/admin/users');
-            if (!res.ok) {
-                if (res.status === 401) {
+            const [usersRes, statsRes] = await Promise.all([
+                fetch('/api/admin/users'),
+                fetch('/api/admin/stats')
+            ]);
+
+            if (!usersRes.ok) {
+                if (usersRes.status === 401) {
                     router.push('/dashboard');
                     return;
                 }
                 throw new Error('Failed to fetch users');
             }
-            const data = await res.json();
-            setUsers(data);
+
+            const userData = await usersRes.json();
+            setUsers(userData);
+
+            if (statsRes.ok) {
+                setStats(await statsRes.json());
+            }
+
         } catch (err) {
             console.error(err);
-            setError('Could not load user data');
+            setError('Could not load admin data');
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchUsers();
+        fetchData();
     }, []);
 
     const handleDelete = async (id: string) => {
@@ -153,17 +171,12 @@ export default function AdminDashboard() {
                 <div style={{
                     display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1.5rem', marginBottom: '3rem'
                 }}>
-                    {/* Stat Card 1 */}
-                    <div style={{
-                        background: 'rgba(30, 41, 59, 0.5)',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        borderRadius: '24px', padding: '1.5rem',
-                        backdropFilter: 'blur(12px)'
-                    }}>
+                    {/* Stat Card 1: Users */}
+                    <div style={statCardStyle}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
                             <div>
                                 <p style={{ color: '#94a3b8', fontSize: '0.9rem', fontWeight: '600', marginBottom: '0.5rem' }}>Total Users</p>
-                                <h3 style={{ fontSize: '2.5rem', fontWeight: '800', margin: 0 }}>{users.length}</h3>
+                                <h3 style={{ fontSize: '2.5rem', fontWeight: '800', margin: 0 }}>{stats?.totalUsers || 0}</h3>
                             </div>
                             <div style={{ padding: '12px', background: 'rgba(59, 130, 246, 0.1)', borderRadius: '12px', color: '#60a5fa' }}>
                                 <Users size={24} />
@@ -171,20 +184,28 @@ export default function AdminDashboard() {
                         </div>
                     </div>
 
-                    {/* Stat Card 2 */}
-                    <div style={{
-                        background: 'rgba(30, 41, 59, 0.5)',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        borderRadius: '24px', padding: '1.5rem',
-                        backdropFilter: 'blur(12px)'
-                    }}>
+                    {/* Stat Card 2: Stories */}
+                    <div style={statCardStyle}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
                             <div>
-                                <p style={{ color: '#94a3b8', fontSize: '0.9rem', fontWeight: '600', marginBottom: '0.5rem' }}>Administrators</p>
-                                <h3 style={{ fontSize: '2.5rem', fontWeight: '800', margin: 0, color: '#c084fc' }}>{users.filter(u => u.role === 'admin').length}</h3>
+                                <p style={{ color: '#94a3b8', fontSize: '0.9rem', fontWeight: '600', marginBottom: '0.5rem' }}>Stories Generated</p>
+                                <h3 style={{ fontSize: '2.5rem', fontWeight: '800', margin: 0, color: '#facc15' }}>{stats?.totalStories || 0}</h3>
                             </div>
-                            <div style={{ padding: '12px', background: 'rgba(168, 85, 247, 0.1)', borderRadius: '12px', color: '#c084fc' }}>
-                                <ShieldAlert size={24} />
+                            <div style={{ padding: '12px', background: 'rgba(250, 204, 21, 0.1)', borderRadius: '12px', color: '#facc15' }}>
+                                <Shield size={24} /> {/* Placeholder icon */}
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Stat Card 3: Active Subs */}
+                    <div style={statCardStyle}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
+                            <div>
+                                <p style={{ color: '#94a3b8', fontSize: '0.9rem', fontWeight: '600', marginBottom: '0.5rem' }}>Active Premium</p>
+                                <h3 style={{ fontSize: '2.5rem', fontWeight: '800', margin: 0, color: '#4ade80' }}>{stats?.activeSubscriptions || 0}</h3>
+                            </div>
+                            <div style={{ padding: '12px', background: 'rgba(74, 222, 128, 0.1)', borderRadius: '12px', color: '#4ade80' }}>
+                                <ShieldAlert size={24} /> {/* Placeholder icon */}
                             </div>
                         </div>
                     </div>
@@ -231,6 +252,7 @@ export default function AdminDashboard() {
                             <thead>
                                 <tr style={{ background: 'rgba(255, 255, 255, 0.02)', color: '#94a3b8', fontSize: '0.85rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                                     <th style={{ padding: '1.5rem', fontWeight: '600' }}>User</th>
+                                    <th style={{ padding: '1.5rem', fontWeight: '600' }}>Status</th>
                                     <th style={{ padding: '1.5rem', fontWeight: '600' }}>Role</th>
                                     <th style={{ padding: '1.5rem', fontWeight: '600' }}>Joined</th>
                                     <th style={{ padding: '1.5rem', fontWeight: '600', textAlign: 'right' }}>Actions</th>
@@ -257,6 +279,15 @@ export default function AdminDashboard() {
                                         </td>
                                         <td style={{ padding: '1.5rem' }}>
                                             <span style={{
+                                                padding: '4px 12px', borderRadius: '50px', fontSize: '0.8rem', fontWeight: '700',
+                                                background: user.subscriptionStatus === 'active' ? 'rgba(74, 222, 128, 0.15)' : 'rgba(148, 163, 184, 0.15)',
+                                                color: user.subscriptionStatus === 'active' ? '#4ade80' : '#94a3b8',
+                                            }}>
+                                                {user.subscriptionStatus === 'active' ? 'PREMIUM' : 'FREE'}
+                                            </span>
+                                        </td>
+                                        <td style={{ padding: '1.5rem' }}>
+                                            <span style={{
                                                 padding: '4px 12px', borderRadius: '50px', fontSize: '0.85rem', fontWeight: '600',
                                                 background: user.role === 'admin' ? 'rgba(168, 85, 247, 0.15)' : 'rgba(51, 65, 85, 0.5)',
                                                 color: user.role === 'admin' ? '#d8b4fe' : '#cbd5e1',
@@ -272,6 +303,18 @@ export default function AdminDashboard() {
                                         </td>
                                         <td style={{ padding: '1.5rem', textAlign: 'right' }}>
                                             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                                                <Link href={`/admin/users/${user.id}`}>
+                                                    <button
+                                                        style={{
+                                                            padding: '8px', borderRadius: '8px', background: 'rgba(59, 130, 246, 0.1)',
+                                                            color: '#60a5fa', border: '1px solid rgba(59, 130, 246, 0.2)', cursor: 'pointer',
+                                                            display: 'flex', alignItems: 'center'
+                                                        }}
+                                                        title="View Details"
+                                                    >
+                                                        <Search size={18} />
+                                                    </button>
+                                                </Link>
                                                 <button
                                                     onClick={() => handleEdit(user)}
                                                     style={{
@@ -307,9 +350,16 @@ export default function AdminDashboard() {
                 <UserModal
                     user={selectedUser}
                     onClose={() => setIsModalOpen(false)}
-                    onSave={fetchUsers}
+                    onSave={fetchData}
                 />
             )}
         </main>
     );
 }
+
+const statCardStyle = {
+    background: 'rgba(30, 41, 59, 0.5)',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
+    borderRadius: '24px', padding: '1.5rem',
+    backdropFilter: 'blur(12px)'
+};

@@ -1,6 +1,7 @@
 
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { auth } from '@/auth';
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
@@ -8,6 +9,12 @@ const openai = new OpenAI({
 
 export async function POST(req: Request) {
     console.log("TTS Request received");
+
+    const session = await auth();
+    if (!session?.user?.id) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     try {
         const { text } = await req.json();
 

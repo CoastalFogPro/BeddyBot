@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { containsBlockedTerm } from '@/lib/safety/blocked_terms';
+import { auth } from '@/auth';
+import { db } from '@/db';
+import { stories, users } from '@/db/schema';
+import { eq } from 'drizzle-orm';
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY || 'dummy-key-for-build',
@@ -12,6 +16,31 @@ export async function POST(request: Request) {
     }
 
     try {
+        // --- 1. AUTH & LIMIT CHECK ---
+        const session = await auth();
+        if (!session?.user?.id) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        const [dbUser] = await db.select().from(users).where(eq(users.id, session.user.id)).limit(1);
+        const userStrategies = await db.select({ id: stories.id }).from(stories).where(eq(stories.userId, session.user.id));
+        const storyCount = userStrategies.length;
+
+        const isPremium = dbUser?.subscriptionStatus === 'active';
+        const isAdmin = dbUser?.role === 'admin';
+        const limit = isAdmin ? 999999 : (isPremium ? 30 : 1);
+
+        if (storyCount >= limit) {
+            console.warn(`User ${session.user.id} reached limit but tried to generate image.`);
+            // We return a specific code so the UI can handle it comfortably (e.g. show placeholder)
+            return NextResponse.json({
+                error: 'Limit reached',
+                code: 'LIMIT_REACHED',
+                imageUrl: null // clear indicator
+            }, { status: 403 });
+        }
+        // -----------------------------
+
         const { theme, style = "storybook" } = await request.json();
 
         // 1. Safety Check: Hard Blocklist (Local)

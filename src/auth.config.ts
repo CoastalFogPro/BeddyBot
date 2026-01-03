@@ -13,22 +13,16 @@ export const authConfig = {
             const isOnStory = nextUrl.pathname.startsWith('/story') || nextUrl.pathname.startsWith('/create');
             const isOnAuth = nextUrl.pathname.startsWith('/login') || nextUrl.pathname.startsWith('/signup');
 
+            console.log(`Middleware: ${nextUrl.pathname} | LoggedIn: ${isLoggedIn}`);
+
             if (isOnAdmin) {
                 if (!isLoggedIn) return false;
                 // @ts-ignore
                 const userRole = auth?.user?.role;
-                console.log("Middleware Admin Check (Bypassed):", { path: nextUrl.pathname, userRole });
+                // console.log("Middleware Admin Check (Bypassed):", { path: nextUrl.pathname, userRole });
 
-                // TEMPORARY BYPASS FOR DEBUGGING
+                // Allow admin access logic here if needed
                 return true;
-
-                /*
-                if (userRole !== 'admin') {
-                    // Redirect non-admins to dashboard if they try to access admin
-                    return Response.redirect(new URL('/dashboard', nextUrl));
-                }
-                return true;
-                */
             }
 
             if (isOnDashboard) {
@@ -37,6 +31,14 @@ export const authConfig = {
             } else if (isOnAuth && isLoggedIn) {
                 return Response.redirect(new URL('/dashboard', nextUrl));
             }
+
+            // Allow access to other pages (including /story, /create if they are public, or add checks)
+            // If /create requires auth but isn't in isOnDashboard, it might be open.
+            // Let's protect /create and /story if they should be private.
+            if (isOnStory && !isLoggedIn) {
+                return false;
+            }
+
             return true;
         },
     },

@@ -5,6 +5,44 @@ import { eq } from 'drizzle-orm';
 import { auth } from '@/auth';
 import bcrypt from 'bcryptjs';
 
+// GET: Fetch user details, children, and stories
+export async function GET(
+    request: Request,
+    { params }: { params: Promise<{ id: string }> }
+) {
+    const session = await auth();
+    // @ts-ignore
+    if (session?.user?.role !== 'admin') {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    try {
+        const { id } = await params;
+
+        // Fetch User
+        const [user] = await db.select().from(users).where(eq(users.id, id));
+        if (!user) return NextResponse.json({ error: 'User not found' }, { status: 404 });
+
+        // Fetch Children
+        const userChildren = await db.select().from(children).where(eq(children.userId, id));
+
+        // Fetch Stories
+        const userStories = await db.select().from(stories).where(eq(stories.userId, id)).limit(50); // Limit to 50 for now
+
+        const { password, ...safeUser } = user;
+
+        return NextResponse.json({
+            user: safeUser,
+            children: userChildren,
+            stories: userStories
+        });
+
+    } catch (error) {
+        console.error("Failed to fetch user details:", error);
+        return NextResponse.json({ error: 'Failed to fetch' }, { status: 500 });
+    }
+}
+
 // DELETE: Delete a user and all their data (Admin only)
 export async function DELETE(
     request: Request,
