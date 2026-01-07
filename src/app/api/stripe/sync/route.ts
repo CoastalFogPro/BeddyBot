@@ -39,16 +39,16 @@ export async function POST(req: Request) {
                 expand: ['data.subscriptions']
             });
 
-            // Find the first customer with an active/trialing subscription
+            // Find the first customer with an ACTIVE or TRIALING subscription
             const payingCustomer = customers.data.find(c =>
                 // @ts-ignore
-                c.subscriptions && c.subscriptions.data.length > 0
+                c.subscriptions && c.subscriptions.data.some((sub: any) => sub.status === 'active' || sub.status === 'trialing')
             );
 
             if (payingCustomer) {
                 console.log(`Sync: Found UNLINKED paying customer ${payingCustomer.id}. Migrating DB...`);
                 // @ts-ignore
-                subscriptionFound = payingCustomer.subscriptions.data[0];
+                subscriptionFound = payingCustomer.subscriptions.data.find((sub: any) => sub.status === 'active' || sub.status === 'trialing');
                 stripeCustomerId = payingCustomer.id;
 
                 // Update DB with the correct paying ID
