@@ -77,7 +77,15 @@ To ensure user accounts update automatically after payment, you must configure a
 
 ---
 
-## 5. Final Checklist
+## 5. Enable Customer Emails (Receipts)
+Stripe does not send receipts by default. You must enable this setting.
+1. Go to **Settings** (gear icon) > **Customer emails**.
+2. Toggle **ON** "Email customers about successful payments".
+3. This ensures your users receive a receipt for every subscription charge.
+
+---
+
+## 6. Final Checklist
 Before you tell users you are live, verify:
 - [ ] `NEXT_PUBLIC_APP_URL` matches your domain.
 - [ ] `STRIPE_SECRET_KEY` starts with `sk_live_`.
