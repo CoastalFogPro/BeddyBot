@@ -9,8 +9,13 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "BeddyBot | AI Bedtime Stories",
-  description: "Generate magical bedtime stories for your child in seconds.",
+  title: "BeddyBot | Personalized AI Bedtime Stories",
+  description: "Create magical, personalized bedtime stories for your child in seconds. Narrated by friendly voices.",
+  icons: {
+    icon: '/icon.png',
+    apple: '/apple-icon.png',
+  },
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({
