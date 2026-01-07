@@ -152,26 +152,7 @@ export default async function LandingPage() {
 
         {/* RIGHT COMPONENT: Content (Desktop Right) */}
         <div className="hero-content-wrapper">
-          {/* Status Badge */}
-          <div style={{
-            fontSize: '0.85rem',
-            color: 'var(--color-accent-green)',
-            fontWeight: 'bold',
-            textTransform: 'uppercase',
-            letterSpacing: '2px',
-            marginBottom: '1rem',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.6rem',
-            background: 'rgba(26, 34, 56, 0.6)',
-            padding: '0.6rem 1.2rem',
-            borderRadius: '50px',
-            border: '1px solid rgba(0, 255, 148, 0.2)',
-            boxShadow: '0 4px 20px rgba(0,0,0,0.2)'
-          }}>
-            <span style={{ width: '8px', height: '8px', background: 'var(--color-accent-green)', borderRadius: '50%', boxShadow: '0 0 10px var(--color-accent-green)', animation: 'pulse 2s infinite' }}></span>
-            Personalized Stories • v2.0
-          </div>
+
 
           {/* Main Heading */}
           <div>

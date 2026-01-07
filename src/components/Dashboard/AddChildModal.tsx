@@ -1,18 +1,43 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Sparkles, Rocket } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+
+interface ChildData {
+    id: string;
+    name: string;
+    age: string;
+    gender: 'Boy' | 'Girl';
+}
 
 interface AddChildModalProps {
     isOpen: boolean;
     onClose: () => void;
     onSuccess: () => void;
+    childToEdit?: ChildData | null;
 }
 
-export default function AddChildModal({ isOpen, onClose, onSuccess }: AddChildModalProps) {
+export default function AddChildModal({ isOpen, onClose, onSuccess, childToEdit }: AddChildModalProps) {
     const [loading, setLoading] = useState(false);
     const [gender, setGender] = useState<'Boy' | 'Girl'>('Boy');
+    const [defaultName, setDefaultName] = useState('');
+    const [defaultAge, setDefaultAge] = useState('');
+
+    // Reset or populate form when modal opens
+    useEffect(() => {
+        if (isOpen) {
+            if (childToEdit) {
+                setGender(childToEdit.gender);
+                setDefaultName(childToEdit.name);
+                setDefaultAge(childToEdit.age);
+            } else {
+                setGender('Boy');
+                setDefaultName('');
+                setDefaultAge('');
+            }
+        }
+    }, [isOpen, childToEdit]);
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -22,22 +47,34 @@ export default function AddChildModal({ isOpen, onClose, onSuccess }: AddChildMo
         const data = {
             name: formData.get('name'),
             age: formData.get('age'),
-            gender: gender // Use state for gender
+            gender: gender
         };
 
         try {
-            const res = await fetch('/api/children', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(data)
-            });
+            let res;
+            if (childToEdit) {
+                // EDIT MODE
+                res = await fetch(`/api/children/${childToEdit.id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+            } else {
+                // CREATE MODE
+                res = await fetch('/api/children', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+            }
+
             const result = await res.json();
 
             if (res.ok) {
                 onSuccess();
                 onClose();
             } else {
-                alert(result.error || 'Failed to create profile');
+                alert(result.error || 'Failed to save profile');
             }
         } catch (err) {
             console.error(err);
@@ -87,7 +124,7 @@ export default function AddChildModal({ isOpen, onClose, onSuccess }: AddChildMo
                 </button>
 
                 <h2 style={{ fontSize: '1.5rem', fontWeight: 'bold', color: 'white', marginBottom: '1.5rem', textAlign: 'center' }}>
-                    New Profile
+                    {childToEdit ? 'Edit Profile' : 'New Profile'}
                 </h2>
 
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -137,6 +174,7 @@ export default function AddChildModal({ isOpen, onClose, onSuccess }: AddChildMo
                             type="text"
                             required
                             placeholder="e.g. Leo"
+                            defaultValue={defaultName}
                             style={{
                                 width: '100%',
                                 padding: '1rem',
@@ -156,6 +194,7 @@ export default function AddChildModal({ isOpen, onClose, onSuccess }: AddChildMo
                             type="number"
                             required
                             placeholder="e.g. 5"
+                            defaultValue={defaultAge}
                             style={{
                                 width: '100%',
                                 padding: '1rem',
@@ -182,7 +221,7 @@ export default function AddChildModal({ isOpen, onClose, onSuccess }: AddChildMo
                                 : 'linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%)'
                         }}
                     >
-                        {loading ? 'Creating...' : 'Create Profile'}
+                        {loading ? 'Saving...' : (childToEdit ? 'Save Changes' : 'Create Profile')}
                     </button>
 
                 </form>

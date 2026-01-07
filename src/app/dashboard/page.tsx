@@ -16,7 +16,7 @@ interface Child {
     id: string;
     name: string;
     age: string;
-    gender: string;
+    gender: 'Boy' | 'Girl';
 }
 
 export default function Dashboard() {
@@ -25,6 +25,8 @@ export default function Dashboard() {
     const [userStatus, setUserStatus] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const [childToEdit, setChildToEdit] = useState<Child | null>(null);
 
     const fetchData = async () => {
         try {
@@ -43,6 +45,11 @@ export default function Dashboard() {
         } finally {
             setLoading(false);
         }
+    };
+
+    const handleEditProfile = (child: Child) => {
+        setChildToEdit(child);
+        setIsModalOpen(true);
     };
 
     const handleDeleteProfile = async (childId: string) => {
@@ -154,7 +161,10 @@ export default function Dashboard() {
                         <motion.button
                             whileHover={{ scale: 1.02, backgroundColor: 'rgba(255,255,255,0.05)' }}
                             whileTap={{ scale: 0.98 }}
-                            onClick={() => setIsModalOpen(true)}
+                            onClick={() => {
+                                setChildToEdit(null);
+                                setIsModalOpen(true);
+                            }}
                             style={{
                                 aspectRatio: '0.8',
                                 borderRadius: '24px',
@@ -187,6 +197,7 @@ export default function Dashboard() {
                                     age={child.age}
                                     gender={child.gender}
                                     onDelete={() => handleDeleteProfile(child.id)}
+                                    onEdit={() => handleEditProfile(child)}
                                 />
                             </Link>
                         ))}
@@ -239,10 +250,14 @@ export default function Dashboard() {
 
             <AddChildModal
                 isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
+                onClose={() => {
+                    setIsModalOpen(false);
+                    setChildToEdit(null);
+                }}
                 onSuccess={() => {
                     fetchData(); // Refresh list
                 }}
+                childToEdit={childToEdit}
             />
         </main >
     );

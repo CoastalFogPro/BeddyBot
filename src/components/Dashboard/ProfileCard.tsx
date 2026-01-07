@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from 'framer-motion';
-import { User, Sparkles, Rocket, Trash2 } from 'lucide-react';
+import { User, Sparkles, Rocket, Trash2, Edit2 } from 'lucide-react';
 
 interface ProfileCardProps {
     name: string;
@@ -10,9 +10,10 @@ interface ProfileCardProps {
     isSelected?: boolean;
     onClick?: () => void;
     onDelete?: () => void;
+    onEdit?: () => void;
 }
 
-export default function ProfileCard({ name, age, gender, isSelected, onClick, onDelete }: ProfileCardProps) {
+export default function ProfileCard({ name, age, gender, isSelected, onClick, onDelete, onEdit }: ProfileCardProps) {
     // Theme logic
     const isGirl = gender === 'Girl';
 
@@ -64,33 +65,57 @@ export default function ProfileCard({ name, age, gender, isSelected, onClick, on
                 <Icon size={24} color="white" strokeWidth={2.5} />
             </div>
 
-            {/* Delete Button */}
-            {onDelete && (
-                <div
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault(); // Prevent Link navigation
-                        onDelete();
-                    }}
-                    style={{
-                        position: 'absolute',
-                        top: '1.5rem',
-                        right: '1.5rem',
-                        background: 'rgba(0, 0, 0, 0.2)',
-                        width: '36px',
-                        height: '36px',
-                        borderRadius: '50%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        zIndex: 20,
-                        cursor: 'pointer',
-                        transition: 'background 0.2s'
-                    }}
-                >
-                    <Trash2 size={18} color="white" />
-                </div>
-            )}
+            {/* Action Buttons (Edit & Delete) */}
+            <div style={{ position: 'absolute', top: '1.5rem', right: '1.5rem', display: 'flex', gap: '0.5rem', zIndex: 20 }}>
+                {/* Edit Button */}
+                {onEdit && (
+                    <div
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            onEdit();
+                        }}
+                        style={{
+                            background: 'rgba(255, 255, 255, 0.2)',
+                            width: '36px',
+                            height: '36px',
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            transition: 'background 0.2s',
+                            backdropFilter: 'blur(4px)'
+                        }}
+                    >
+                        <Edit2 size={18} color="white" />
+                    </div>
+                )}
+
+                {/* Delete Button */}
+                {onDelete && (
+                    <div
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            onDelete();
+                        }}
+                        style={{
+                            background: 'rgba(0, 0, 0, 0.2)',
+                            width: '36px',
+                            height: '36px',
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            transition: 'background 0.2s'
+                        }}
+                    >
+                        <Trash2 size={18} color="white" />
+                    </div>
+                )}
+            </div>
 
             {/* Text Content */}
             <div style={{ color: 'white', zIndex: 2 }}>
