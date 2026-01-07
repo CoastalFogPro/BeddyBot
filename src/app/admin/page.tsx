@@ -211,6 +211,61 @@ export default function AdminDashboard() {
                     </div>
                 </div>
 
+                {/* Stripe Tools */}
+                <div style={{
+                    background: 'rgba(20, 20, 30, 0.6)',
+                    border: '1px solid rgba(255, 100, 100, 0.2)',
+                    borderRadius: '24px', padding: '1.5rem', marginBottom: '3rem'
+                }}>
+                    <h2 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '1rem', color: '#fca5a5' }}>
+                        ⚡ Emergency Stripe Tools
+                    </h2>
+                    <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-end' }}>
+                        <div style={{ flex: 1 }}>
+                            <label style={{ display: 'block', fontSize: '0.8rem', color: '#94a3b8', marginBottom: '0.5rem' }}>
+                                Stripe Customer ID (e.g. cus_TkX...)
+                            </label>
+                            <input
+                                id="stripeToolsInput"
+                                type="text"
+                                placeholder="cus_..."
+                                style={{
+                                    width: '100%', padding: '0.75rem',
+                                    background: 'black', border: '1px solid rgba(255,255,255,0.1)',
+                                    borderRadius: '8px', color: 'white'
+                                }}
+                            />
+                        </div>
+                        <button
+                            onClick={async () => {
+                                const input = document.getElementById('stripeToolsInput') as HTMLInputElement;
+                                const id = input.value.trim();
+                                if (!id) return alert("Enter an ID");
+                                if (!confirm(`Normally you should just click 'Cancel' in the Stripe Dashboard.\n\nAre you sure you want to FORCE CANCEL all subscriptions for ${id}?`)) return;
+
+                                try {
+                                    const res = await fetch('/api/admin/stripe-tool', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({ customerId: id })
+                                    });
+                                    const data = await res.json();
+                                    alert(JSON.stringify(data, null, 2));
+                                } catch (e: any) {
+                                    alert(e.message);
+                                }
+                            }}
+                            style={{
+                                padding: '0.75rem 1.5rem', borderRadius: '8px',
+                                background: '#ef4444', color: 'white', fontWeight: 'bold', border: 'none',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            Force Cancel
+                        </button>
+                    </div>
+                </div>
+
                 {/* Main Content Area */}
                 <div style={{
                     background: 'rgba(30, 41, 59, 0.3)',
