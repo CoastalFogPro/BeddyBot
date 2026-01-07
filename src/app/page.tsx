@@ -17,7 +17,7 @@ export default async function LandingPage() {
   const demoStory = {
     title: "Poppy and the Rocket Ship",
     content: "Once upon a time, there was a brave girl named Poppy who loved the stars. One night, a friendly robot named BeddyBot landed in her backyard. 'Beep boop,' said the robot. 'Do you want to fly to the moon?' Poppy's eyes lit up with joy. She climbed aboard the shiny silver rocket, and together they zoomed past twinkling constellations and sleeping clouds. It was the most magical adventure ever.",
-    imageUrl: '/mockup-story.png',
+    imageUrl: '/demo-poppy-rocket.png',
     audioUrl: '/demo-story.mp3',
     childName: 'Poppy'
   };
