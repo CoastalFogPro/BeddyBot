@@ -13,26 +13,14 @@ import AppShowcase from '@/components/Landing/AppShowcase';
 export default async function LandingPage() {
   const session = await auth();
 
-  // --- FETCH DEMO STORY (For "Poppy") ---
-  let demoStory = null;
-  const demoChild = await db.select().from(children).where(eq(children.name, 'Poppy')).limit(1);
-  if (demoChild.length > 0) {
-    const storyResults = await db.select()
-      .from(stories)
-      .where(eq(stories.childId, demoChild[0].id))
-      .orderBy(desc(stories.createdAt))
-      .limit(1);
-
-    if (storyResults.length > 0) {
-      demoStory = {
-        title: storyResults[0].title,
-        content: storyResults[0].content,
-        imageUrl: storyResults[0].imageUrl || '/mockup-story.png', // Fallback
-        audioUrl: storyResults[0].audioUrl || '',
-        childName: 'Poppy'
-      };
-    }
-  }
+  // --- STATIC DEMO STORY (Always Visible) ---
+  const demoStory = {
+    title: "Poppy and the Rocket Ship",
+    content: "Once upon a time, there was a brave girl named Poppy who loved the stars. One night, a friendly robot named BeddyBot landed in her backyard. 'Beep boop,' said the robot. 'Do you want to fly to the moon?' Poppy's eyes lit up with joy. She climbed aboard the shiny silver rocket, and together they zoomed past twinkling constellations and sleeping clouds. It was the most magical adventure ever.",
+    imageUrl: '/mockup-story.png',
+    audioUrl: '/demo-story.mp3',
+    childName: 'Poppy'
+  };
   // --------------------------------------
 
   return (

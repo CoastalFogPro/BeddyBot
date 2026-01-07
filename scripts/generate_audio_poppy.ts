@@ -3,6 +3,8 @@ import { children, stories } from '@/db/schema';
 import { eq, desc } from 'drizzle-orm';
 import OpenAI from 'openai';
 import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
 dotenv.config({ path: '.env.local' });
 
 const openai = new OpenAI({
@@ -10,38 +12,15 @@ const openai = new OpenAI({
 });
 
 async function generatePoppyAudio() {
-    console.log("Searching for Poppy's latest story to add audio...");
+    console.log("Generating Demo Audio for Landing Page...");
 
-    // 1. Find the Child
-    const [poppy] = await db.select().from(children).where(eq(children.name, 'Poppy')).limit(1);
-    if (!poppy) {
-        console.error("No child named Poppy found.");
-        process.exit(1);
-    }
+    // Hardcoded demo text so we don't rely on local DB state
+    const title = "Poppy and the Rocket Ship";
+    const content = "Once upon a time, there was a brave girl named Poppy who loved the stars. One night, a friendly robot named BeddyBot landed in her backyard. 'Beep boop,' said the robot. 'Do you want to fly to the moon?' Poppy's eyes lit up with joy. She climbed aboard the shiny silver rocket, and together they zoomed past twinkling constellations and sleeping clouds. It was the most magical adventure ever.";
 
-    // 2. Find the Story
-    const [story] = await db.select()
-        .from(stories)
-        .where(eq(stories.childId, poppy.id))
-        .orderBy(desc(stories.createdAt))
-        .limit(1);
+    const textToRead = `${title}. ${content}`;
 
-    if (!story) {
-        console.error("No story found for Poppy.");
-        process.exit(1);
-    }
-
-    console.log(`Found story: "${story.title}"`);
-
-    if (story.audioUrl && story.audioUrl.length > 100) {
-        console.log("Audio URL already exists. Overwriting/Regenerating...");
-    }
-
-    // 3. Generate Audio
-    console.log("Generating Audio via OpenAI (Title)...");
-
-    // We'll read the Title + First 800 chars of content to keep it snappy for the demo
-    const textToRead = `${story.title}. ${story.content.substring(0, 1000)}`;
+    console.log("Generating Audio via OpenAI...");
 
     try {
         const mp3 = await openai.audio.speech.create({
@@ -50,19 +29,14 @@ async function generatePoppyAudio() {
             input: textToRead,
         });
 
-        console.log("Audio generated. converting to Base64...");
+        console.log("Audio generated. Saving to public folder...");
         const buffer = Buffer.from(await mp3.arrayBuffer());
-        const base64Audio = `data:audio/mpeg;base64,${buffer.toString('base64')}`;
 
-        console.log(`Audio Size: ${(base64Audio.length / 1024 / 1024).toFixed(2)} MB`);
+        const outputPath = path.join(process.cwd(), 'public', 'demo-story.mp3');
+        fs.writeFileSync(outputPath, buffer);
 
-        // 4. Save to DB
-        console.log("Saving to database...");
-        await db.update(stories)
-            .set({ audioUrl: base64Audio })
-            .where(eq(stories.id, story.id));
-
-        console.log("✅ Success! Audio has been attached to the story.");
+        console.log(`✅ Success! Audio saved to: ${outputPath}`);
+        console.log(`Audio Size: ${(buffer.length / 1024 / 1024).toFixed(2)} MB`);
 
     } catch (err) {
         console.error("Failed to generate/save audio:", err);
