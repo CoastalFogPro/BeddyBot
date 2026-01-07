@@ -74,7 +74,7 @@ export async function POST(req: Request) {
 
         // Determine Plan Type logic (simplified)
         // You might want to map price IDs to plan names if strict
-        const isYearly = sub.items.data.some(item => item.price.recurring?.interval === 'year');
+        const isYearly = sub.items.data.some((item: any) => item.price.recurring?.interval === 'year');
         const planType = isYearly ? 'yearly' : 'monthly';
 
         // Update DB
