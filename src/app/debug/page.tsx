@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
+import { useSession, SessionProvider } from 'next-auth/react';
 
 export const dynamic = "force-dynamic";
 
-export default function DebugPage() {
+function DebugContent() {
     const sessionObj = useSession();
     const session = sessionObj?.data;
     const sessionStatus = sessionObj?.status;
@@ -40,11 +40,18 @@ export default function DebugPage() {
     }, []);
 
     if (sessionStatus === 'loading') return <div className="p-8 text-white">Loading Debugger...</div>;
-    if (!session) return <div className="p-8 text-white">Please log in to debug.</div>;
 
     return (
         <div className="min-h-screen bg-slate-900 text-white p-8 font-sans">
             <h1 className="text-3xl font-bold mb-8 text-red-500">🔧 Live Debugger</h1>
+
+            {!session && (
+                <div className="bg-red-900/50 p-4 border border-red-500 rounded mb-6 text-red-200">
+                    Warning: No Session Detected. You might be logged out or the session cookie is missing.
+                    <br />
+                    Status: {sessionStatus}
+                </div>
+            )}
 
             <div className="grid gap-8">
                 {/* System Status */}
@@ -63,8 +70,8 @@ export default function DebugPage() {
                 <div className="bg-slate-800 p-6 rounded-xl border border-slate-700">
                     <h2 className="text-xl font-semibold mb-4 text-purple-400">Your Account (DB)</h2>
                     <div className="space-y-2">
-                        <p><strong>Email:</strong> {session.user?.email}</p>
-                        <p><strong>ID:</strong> {session.user?.id}</p>
+                        <p><strong>Email:</strong> {session?.user?.email || 'N/A'}</p>
+                        <p><strong>ID:</strong> {session?.user?.id || 'N/A'}</p>
                     </div>
                 </div>
 
@@ -75,8 +82,8 @@ export default function DebugPage() {
 
                     <button
                         onClick={runSync}
-                        disabled={loading}
-                        className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-2 px-6 rounded-lg transition-colors"
+                        disabled={loading || !session}
+                        className={`font-bold py-2 px-6 rounded-lg transition-colors ${loading || !session ? 'bg-gray-600 text-gray-400 cursor-not-allowed' : 'bg-yellow-500 hover:bg-yellow-600 text-black'}`}
                     >
                         {loading ? 'Running Search...' : 'Find My Subscription'}
                     </button>
@@ -92,5 +99,13 @@ export default function DebugPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function DebugPage() {
+    return (
+        <SessionProvider>
+            <DebugContent />
+        </SessionProvider>
     );
 }
