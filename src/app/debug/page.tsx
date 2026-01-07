@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 
 export default function DebugPage() {
-    const { data: session } = useSession();
+    const { data: session, status: sessionStatus } = useSession(); // Access status to check loading state
     const [status, setStatus] = useState<any>(null);
     const [syncResult, setSyncResult] = useState<any>(null);
     const [loading, setLoading] = useState(false);
@@ -34,6 +34,7 @@ export default function DebugPage() {
         fetchSystemStatus();
     }, []);
 
+    if (sessionStatus === 'loading') return <div className="p-8 text-white">Loading Debugger...</div>;
     if (!session) return <div className="p-8 text-white">Please log in to debug.</div>;
 
     return (
