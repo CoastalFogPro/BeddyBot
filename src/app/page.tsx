@@ -3,9 +3,36 @@ import Image from 'next/image';
 import { ArrowRight, Shield, Sparkles, Volume2, Star } from 'lucide-react';
 
 import { auth } from '@/auth';
+import StoryDemo from '@/components/Landing/StoryDemo';
+import { db } from '@/db';
+import { children, stories } from '@/db/schema';
+import { eq, desc } from 'drizzle-orm';
+import ScrollReveal from '@/components/Landing/ScrollReveal';
 
 export default async function LandingPage() {
   const session = await auth();
+
+  // --- FETCH DEMO STORY (For "Poppy") ---
+  let demoStory = null;
+  const demoChild = await db.select().from(children).where(eq(children.name, 'Poppy')).limit(1);
+  if (demoChild.length > 0) {
+    const storyResults = await db.select()
+      .from(stories)
+      .where(eq(stories.childId, demoChild[0].id))
+      .orderBy(desc(stories.createdAt))
+      .limit(1);
+
+    if (storyResults.length > 0) {
+      demoStory = {
+        title: storyResults[0].title,
+        content: storyResults[0].content,
+        imageUrl: storyResults[0].imageUrl || '/mockup-story.png', // Fallback
+        audioUrl: storyResults[0].audioUrl || '',
+        childName: 'Poppy'
+      };
+    }
+  }
+  // --------------------------------------
 
   return (
     <main style={{
@@ -213,48 +240,164 @@ export default async function LandingPage() {
         borderRadius: '40px',
         boxShadow: 'inset 0 0 40px rgba(77, 150, 255, 0.05)'
       }}>
-        {/* Section Header */}
-        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-          <h2 style={{
-            fontSize: 'clamp(2rem, 4vw, 3rem)',
-            fontWeight: '800',
-            marginBottom: '1rem',
-            background: 'linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
-          }}>
-            One Click. Endless Bedtime Adventures.
-          </h2>
-          <p style={{ fontSize: '1.2rem', color: 'rgba(255,255,255,0.7)', maxWidth: '600px', margin: '0 auto' }}>
-            With BeddyBot, customized bedtime stories are ready in seconds
-          </p>
-        </div>
+        <ScrollReveal>
+          {/* Section Header */}
+          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+            <h2 style={{
+              fontSize: 'clamp(2rem, 4vw, 3rem)',
+              fontWeight: '800',
+              marginBottom: '1rem',
+              background: 'linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent'
+            }}>
+              One Click. Endless Bedtime Adventures.
+            </h2>
+            <p style={{ fontSize: '1.2rem', color: 'rgba(255,255,255,0.7)', maxWidth: '600px', margin: '0 auto' }}>
+              With BeddyBot, customized bedtime stories are ready in seconds
+            </p>
+          </div>
 
-        {/* Cards Grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-          gap: '2rem'
-        }}>
-          <FeatureCard
-            icon="/robot-personalization.png"
-            title="Built Just for Them"
-            desc="Enter your child's name, age, and interests. Watch as BeddyBot creates a one-of-a-kind adventure where they're the hero, perfectly tailored to their imagination."
-            accentColor="rgba(255, 159, 67, 0.2)"
-          />
-          <FeatureCard
-            icon="/robot-safety.png"
-            title="Safe & Age-Appropriate"
-            desc="Every story adapts to your child's age with vocabulary and themes that are just right. Our Safety Shield ensures content is always gentle and worry-free."
-            accentColor="rgba(77, 150, 255, 0.2)"
-          />
-          <FeatureCard
-            icon="/robot-audio.png"
-            title="Hear Their Name Spoken"
-            desc="BeddyBot reads the personalized story aloud with warm, friendly voices. Your child will light up hearing their own name in the adventure."
-            accentColor="rgba(107, 203, 119, 0.2)"
-          />
-        </div>
+          {/* Cards Grid */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gap: '2rem'
+          }}>
+            <FeatureCard
+              icon="/robot-personalization.png"
+              title="Built Just for Them"
+              desc="Enter your child's name, age, and interests. Watch as BeddyBot creates a one-of-a-kind adventure where they're the hero, perfectly tailored to their imagination."
+              accentColor="rgba(255, 159, 67, 0.2)"
+            />
+            <FeatureCard
+              icon="/robot-safety.png"
+              title="Safe & Age-Appropriate"
+              desc="Every story adapts to your child's age with vocabulary and themes that are just right. Our Safety Shield ensures content is always gentle and worry-free."
+              accentColor="rgba(77, 150, 255, 0.2)"
+            />
+            <FeatureCard
+              icon="/robot-audio.png"
+              title="Hear Their Name Spoken"
+              desc="BeddyBot reads the personalized story aloud with warm, friendly voices. Your child will light up hearing their own name in the adventure."
+              accentColor="rgba(107, 203, 119, 0.2)"
+            />
+          </div>
+        </ScrollReveal>
+      </section>
+
+      {/* Safety Shield Section */}
+      <section style={{
+        maxWidth: '1200px',
+        margin: '0 auto 2rem',
+        padding: '0 2rem',
+        display: 'flex',
+        flexDirection: 'column', // Mobile first default, we'll use a responsive grid if needed but flex column is safe for simple stacking
+        alignItems: 'center',
+        gap: '3rem',
+        position: 'relative',
+        zIndex: 1
+      }}>
+        <ScrollReveal style={{ width: '100%' }}>
+          <div style={{
+            display: 'flex',
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            flexWrap: 'wrap',
+            gap: '4rem',
+            background: 'rgba(26, 34, 56, 0.4)',
+            borderRadius: '40px',
+            padding: '3rem',
+            width: '100%',
+            border: '1px solid rgba(77, 150, 255, 0.2)',
+            boxShadow: '0 20px 60px rgba(0,0,0,0.2)'
+          }}>
+            {/* Image Side */}
+            <div style={{ flex: '1 1 300px', maxWidth: '400px', display: 'flex', justifyContent: 'center' }}>
+              <div style={{ position: 'relative' }}>
+                <div style={{
+                  position: 'absolute',
+                  inset: '-20px',
+                  background: 'radial-gradient(circle, rgba(77, 150, 255, 0.4) 0%, transparent 70%)',
+                  filter: 'blur(20px)',
+                  zIndex: 0
+                }} />
+                <Image
+                  src="/beddy-police-shield.png"
+                  alt="BeddyBot Safety Shield"
+                  width={350}
+                  height={350}
+                  className="animate-shield"
+                  style={{
+                    width: '100%',
+                    height: 'auto',
+                    position: 'relative',
+                    zIndex: 1,
+                    // Filter moved to CSS animation
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* Content Side */}
+            <div style={{ flex: '1 1 400px', maxWidth: '600px' }}>
+              <div style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                padding: '0.5rem 1rem',
+                background: 'rgba(77, 150, 255, 0.15)',
+                borderRadius: '20px',
+                color: '#4D96FF',
+                fontWeight: '700',
+                fontSize: '0.9rem',
+                marginBottom: '1rem',
+                border: '1px solid rgba(77, 150, 255, 0.3)'
+              }}>
+                <Shield size={16} /> PARENT-APPROVED PROTECTION
+              </div>
+
+              <h2 style={{
+                fontSize: 'clamp(2rem, 3.5vw, 2.8rem)',
+                fontWeight: '800',
+                marginBottom: '1.5rem',
+                lineHeight: '1.2'
+              }}>
+                The BeddyBot <br />
+                <span style={{ color: '#4D96FF' }}>Safety Shield</span>
+              </h2>
+
+              <p style={{
+                fontSize: '1.1rem',
+                color: 'rgba(255,255,255,0.8)',
+                lineHeight: '1.7',
+                marginBottom: '2rem'
+              }}>
+                We know that as a parent, safety is your #1 priority. It's ours too.
+                BeddyBot uses advanced AI content filtering to ensure every story is
+                gentle, non-violent, and perfectly appropriate for young ears.
+              </p>
+
+              <ul style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                {[
+                  "Strict 'Safe-Mode' AI Content Filtering",
+                  "Age-Appropriate Themes & Language",
+                  "No Ads, External Links, or Data Sharing",
+                  "Parental Control over Topics"
+                ].map((item, i) => (
+                  <li key={i} style={{ display: 'flex', alignItems: 'center', gap: '1rem', fontSize: '1.05rem', color: 'rgba(255,255,255,0.9)' }}>
+                    <div style={{
+                      minWidth: '24px', height: '24px', borderRadius: '50%', background: '#4bb543',
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'black', fontSize: '14px'
+                    }}>✓</div>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </ScrollReveal>
       </section>
 
       {/* How It Works Banner */}
@@ -293,186 +436,201 @@ export default async function LandingPage() {
         zIndex: 1,
         overflow: 'hidden'
       }}>
-        {/* Section Header */}
-        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-          <h2 style={{
-            fontSize: 'clamp(2rem, 4vw, 3rem)',
-            fontWeight: '800',
-            marginBottom: '1rem',
-            background: 'linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
+        <ScrollReveal>
+          {/* Section Header */}
+          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+            <h2 style={{
+              fontSize: 'clamp(2rem, 4vw, 3rem)',
+              fontWeight: '800',
+              marginBottom: '1rem',
+              background: 'linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.7) 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent'
+            }}>
+              Personalized Bedtime Stories For Your Child <br />
+              <span style={{ fontSize: '1.1em', background: 'linear-gradient(135deg, #4D96FF 0%, #6BCB77 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                in Seconds.
+              </span>
+            </h2>
+            <p style={{ fontSize: '1.2rem', color: 'rgba(255,255,255,0.7)', maxWidth: '600px', margin: '0 auto' }}>
+              From creation to bedtime magic in just a few clicks
+            </p>
+          </div>
+
+          {/* Screenshots Grid */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
+            gap: '3rem',
+            alignItems: 'center'
           }}>
-            Personalized Bedtime Stories For Your Child <br />
-            <span style={{ fontSize: '1.1em', background: 'linear-gradient(135deg, #4D96FF 0%, #6BCB77 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              in Seconds.
-            </span>
-          </h2>
-          <p style={{ fontSize: '1.2rem', color: 'rgba(255,255,255,0.7)', maxWidth: '600px', margin: '0 auto' }}>
-            From creation to bedtime magic in just a few clicks
-          </p>
-        </div>
-
-        {/* Screenshots Grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
-          gap: '3rem',
-          alignItems: 'center'
-        }}>
-          {/* Screenshot 1 - Dashboard */}
-          <div style={{ animation: 'float-screenshot 6s ease-in-out infinite', animationDelay: '0s' }}>
-            <div className="screenshot-float" style={{
-              position: 'relative',
-              borderRadius: '24px',
-              overflow: 'hidden',
-              boxShadow: '0 30px 80px rgba(0, 0, 0, 0.5)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.6), rgba(26, 34, 56, 0.3))'
-            }}>
-              <Image
-                src="/mockup-dashboard.png"
-                alt="Magical Family Dashboard"
-                width={600}
-                height={800}
-                style={{ width: '100%', height: 'auto', display: 'block' }}
-              />
-              <div style={{
-                position: 'absolute',
-                bottom: '1.5rem',
-                left: '1.5rem',
-                right: '1.5rem',
-                background: 'rgba(0, 0, 0, 0.8)',
-                backdropFilter: 'blur(10px)',
-                padding: '1rem',
-                borderRadius: '12px',
-                border: '1px solid rgba(255,255,255,0.1)'
+            {/* Screenshot 1 - Dashboard */}
+            <div style={{ animation: 'float-screenshot 6s ease-in-out infinite', animationDelay: '0s' }}>
+              <div className="screenshot-float" style={{
+                position: 'relative',
+                borderRadius: '24px',
+                overflow: 'hidden',
+                boxShadow: '0 30px 80px rgba(0, 0, 0, 0.5)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.6), rgba(26, 34, 56, 0.3))'
               }}>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
-                  🏰 Your Family Kingdom
-                </h3>
-                <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
-                  Manage profiles and save favorite stories securely
-                </p>
+                <Image
+                  src="/mockup-dashboard.png"
+                  alt="Magical Family Dashboard"
+                  width={600}
+                  height={800}
+                  style={{ width: '100%', height: 'auto', display: 'block' }}
+                />
+                <div style={{
+                  position: 'absolute',
+                  bottom: '1.5rem',
+                  left: '1.5rem',
+                  right: '1.5rem',
+                  background: 'rgba(0, 0, 0, 0.8)',
+                  backdropFilter: 'blur(10px)',
+                  padding: '1rem',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(255,255,255,0.1)'
+                }}>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
+                    🏰 Your Family Kingdom
+                  </h3>
+                  <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
+                    Manage profiles and save favorite stories securely
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Screenshot 1.5 - Profile */}
+            <div style={{ animation: 'float-screenshot 6s ease-in-out infinite', animationDelay: '1s' }}>
+              <div className="screenshot-float" style={{
+                position: 'relative',
+                borderRadius: '24px',
+                overflow: 'hidden',
+                boxShadow: '0 30px 80px rgba(107, 203, 119, 0.3)',
+                border: '1px solid rgba(107, 203, 119, 0.2)',
+                background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.6), rgba(26, 34, 56, 0.3))'
+              }}>
+                <Image
+                  src="/mockup-profile.png"
+                  alt="Create Child Profiles"
+                  width={600}
+                  height={800}
+                  style={{ width: '100%', height: 'auto', display: 'block' }}
+                />
+                <div style={{
+                  position: 'absolute',
+                  bottom: '1.5rem',
+                  left: '1.5rem',
+                  right: '1.5rem',
+                  background: 'rgba(0, 0, 0, 0.8)',
+                  backdropFilter: 'blur(10px)',
+                  padding: '1rem',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(107, 203, 119, 0.2)'
+                }}>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
+                    👤 Create Personal Profiles
+                  </h3>
+                  <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
+                    Set the age and name for perfect stories
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Screenshot 2 - Create */}
+            <div style={{ animation: 'float-screenshot 6s ease-in-out infinite', animationDelay: '2s' }}>
+              <div className="screenshot-float" style={{
+                position: 'relative',
+                borderRadius: '24px',
+                overflow: 'hidden',
+                boxShadow: '0 30px 80px rgba(255, 159, 67, 0.3)',
+                border: '1px solid rgba(255, 159, 67, 0.2)',
+                background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.6), rgba(26, 34, 56, 0.3))'
+              }}>
+                <Image
+                  src="/mockup-create.png"
+                  alt="Easy Story Creation"
+                  width={600}
+                  height={800}
+                  style={{ width: '100%', height: 'auto', display: 'block' }}
+                />
+                <div style={{
+                  position: 'absolute',
+                  bottom: '1.5rem',
+                  left: '1.5rem',
+                  right: '1.5rem',
+                  background: 'rgba(0, 0, 0, 0.8)',
+                  backdropFilter: 'blur(10px)',
+                  padding: '1rem',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(255, 159, 67, 0.2)'
+                }}>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
+                    ✨ Simple Personalization
+                  </h3>
+                  <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
+                    Just choose a theme and let magic happen
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Screenshot 3 - Result */}
+            <div style={{ animation: 'float-screenshot 6s ease-in-out infinite', animationDelay: '4s' }}>
+              <div className="screenshot-float" style={{
+                position: 'relative',
+                borderRadius: '24px',
+                overflow: 'hidden',
+                boxShadow: '0 30px 80px rgba(77, 150, 255, 0.3)',
+                border: '1px solid rgba(77, 150, 255, 0.2)',
+                background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.6), rgba(26, 34, 56, 0.3))'
+              }}>
+                <Image
+                  src="/mockup-story.png"
+                  alt="Beautiful Story Results"
+                  width={600}
+                  height={800}
+                  style={{ width: '100%', height: 'auto', display: 'block' }}
+                />
+                <div style={{
+                  position: 'absolute',
+                  bottom: '1.5rem',
+                  left: '1.5rem',
+                  right: '1.5rem',
+                  background: 'rgba(0, 0, 0, 0.8)',
+                  backdropFilter: 'blur(10px)',
+                  padding: '1rem',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(77, 150, 255, 0.2)'
+                }}>
+                  <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
+                    📚 Beautiful Adventures
+                  </h3>
+                  <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
+                    Illustrated tales tailored just for them
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-
-          {/* Screenshot 1.5 - Profile */}
-          <div style={{ animation: 'float-screenshot 6s ease-in-out infinite', animationDelay: '1s' }}>
-            <div className="screenshot-float" style={{
-              position: 'relative',
-              borderRadius: '24px',
-              overflow: 'hidden',
-              boxShadow: '0 30px 80px rgba(107, 203, 119, 0.3)',
-              border: '1px solid rgba(107, 203, 119, 0.2)',
-              background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.6), rgba(26, 34, 56, 0.3))'
-            }}>
-              <Image
-                src="/mockup-profile.png"
-                alt="Create Child Profiles"
-                width={600}
-                height={800}
-                style={{ width: '100%', height: 'auto', display: 'block' }}
-              />
-              <div style={{
-                position: 'absolute',
-                bottom: '1.5rem',
-                left: '1.5rem',
-                right: '1.5rem',
-                background: 'rgba(0, 0, 0, 0.8)',
-                backdropFilter: 'blur(10px)',
-                padding: '1rem',
-                borderRadius: '12px',
-                border: '1px solid rgba(107, 203, 119, 0.2)'
-              }}>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
-                  👤 Create Personal Profiles
-                </h3>
-                <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
-                  Set the age and name for perfect stories
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Screenshot 2 - Create */}
-          <div style={{ animation: 'float-screenshot 6s ease-in-out infinite', animationDelay: '2s' }}>
-            <div className="screenshot-float" style={{
-              position: 'relative',
-              borderRadius: '24px',
-              overflow: 'hidden',
-              boxShadow: '0 30px 80px rgba(255, 159, 67, 0.3)',
-              border: '1px solid rgba(255, 159, 67, 0.2)',
-              background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.6), rgba(26, 34, 56, 0.3))'
-            }}>
-              <Image
-                src="/mockup-create.png"
-                alt="Easy Story Creation"
-                width={600}
-                height={800}
-                style={{ width: '100%', height: 'auto', display: 'block' }}
-              />
-              <div style={{
-                position: 'absolute',
-                bottom: '1.5rem',
-                left: '1.5rem',
-                right: '1.5rem',
-                background: 'rgba(0, 0, 0, 0.8)',
-                backdropFilter: 'blur(10px)',
-                padding: '1rem',
-                borderRadius: '12px',
-                border: '1px solid rgba(255, 159, 67, 0.2)'
-              }}>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
-                  ✨ Simple Personalization
-                </h3>
-                <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
-                  Just choose a theme and let magic happen
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Screenshot 3 - Result */}
-          <div style={{ animation: 'float-screenshot 6s ease-in-out infinite', animationDelay: '4s' }}>
-            <div className="screenshot-float" style={{
-              position: 'relative',
-              borderRadius: '24px',
-              overflow: 'hidden',
-              boxShadow: '0 30px 80px rgba(77, 150, 255, 0.3)',
-              border: '1px solid rgba(77, 150, 255, 0.2)',
-              background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.6), rgba(26, 34, 56, 0.3))'
-            }}>
-              <Image
-                src="/mockup-story.png"
-                alt="Beautiful Story Results"
-                width={600}
-                height={800}
-                style={{ width: '100%', height: 'auto', display: 'block' }}
-              />
-              <div style={{
-                position: 'absolute',
-                bottom: '1.5rem',
-                left: '1.5rem',
-                right: '1.5rem',
-                background: 'rgba(0, 0, 0, 0.8)',
-                backdropFilter: 'blur(10px)',
-                padding: '1rem',
-                borderRadius: '12px',
-                border: '1px solid rgba(77, 150, 255, 0.2)'
-              }}>
-                <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
-                  📚 Beautiful Adventures
-                </h3>
-                <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
-                  Illustrated tales tailored just for them
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        </ScrollReveal>
       </section>
+
+      {/* Demo Story Section (Dynamic) */}
+      {demoStory && (
+        <ScrollReveal>
+          <StoryDemo
+            title={demoStory.title}
+            content={demoStory.content}
+            imageUrl={demoStory.imageUrl}
+            audioUrl={demoStory.audioUrl}
+            childName={demoStory.childName}
+          />
+        </ScrollReveal>
+      )}
 
       {/* Pricing / Plans Section */}
       <section style={{
@@ -483,78 +641,80 @@ export default async function LandingPage() {
         position: 'relative',
         zIndex: 1
       }}>
-        <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
-          <h2 style={{
-            fontSize: 'clamp(2rem, 4vw, 3rem)',
-            fontWeight: '800',
-            marginBottom: '1rem',
-            color: 'white'
+        <ScrollReveal>
+          <div style={{ textAlign: 'center', marginBottom: '4rem' }}>
+            <h2 style={{
+              fontSize: 'clamp(2rem, 4vw, 3rem)',
+              fontWeight: '800',
+              marginBottom: '1rem',
+              color: 'white'
+            }}>
+              Choose Your Adventure
+            </h2>
+            <p style={{ fontSize: '1.2rem', color: 'rgba(255,255,255,0.7)', maxWidth: '600px', margin: '0 auto' }}>
+              Start for free, then unlock unlimited magic.
+            </p>
+          </div>
+
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+            gap: '2rem',
+            maxWidth: '1000px',
+            margin: '0 auto'
           }}>
-            Choose Your Adventure
-          </h2>
-          <p style={{ fontSize: '1.2rem', color: 'rgba(255,255,255,0.7)', maxWidth: '600px', margin: '0 auto' }}>
-            Start for free, then unlock unlimited magic.
-          </p>
-        </div>
+            {/* Free Plan */}
+            <PricingCard
+              title="Starter"
+              price="Free"
+              description="Perfect for one bedtime story."
+              features={[
+                "1 Personalized Story",
+                "Standard Themes",
+                "Standard Audio"
+              ]}
+              buttonText="Create Free Account"
+              link="/signup"
+              isPopular={false}
+            />
 
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-          gap: '2rem',
-          maxWidth: '1000px',
-          margin: '0 auto'
-        }}>
-          {/* Free Plan */}
-          <PricingCard
-            title="Starter"
-            price="Free"
-            description="Perfect for one bedtime story."
-            features={[
-              "1 Personalized Story",
-              "Standard Themes",
-              "Standard Audio"
-            ]}
-            buttonText="Create Free Account"
-            link="/signup"
-            isPopular={false}
-          />
+            {/* Monthly Plan */}
+            <PricingCard
+              title="Monthly"
+              price="$9.99"
+              period="/month"
+              description="Unlimited stories for active imaginations."
+              features={[
+                "Unlimited Stories Generated",
+                "Save 30 Stories Forever",
+                "Priority Generation",
+                "Access to All Future Story Themes"
+              ]}
+              buttonText="Start Monthly"
+              link="/signup?plan=monthly"
+              isPopular={false}
+              accentColor="#4D96FF"
+            />
 
-          {/* Monthly Plan */}
-          <PricingCard
-            title="Monthly"
-            price="$9.99"
-            period="/month"
-            description="Unlimited stories for active imaginations."
-            features={[
-              "Unlimited Stories Generated",
-              "Save 30 Stories Forever",
-              "Priority Generation",
-              "Access to All Future Story Themes"
-            ]}
-            buttonText="Start Monthly"
-            link="/signup?plan=monthly"
-            isPopular={false}
-            accentColor="#4D96FF"
-          />
-
-          {/* Yearly Plan */}
-          <PricingCard
-            title="Yearly"
-            price="$49.99"
-            period="/year"
-            description="Best value for year-round magic."
-            features={[
-              "Everything in Monthly",
-              "2 Months Free",
-              "Early Access to New Features",
-              "VIP Support"
-            ]}
-            buttonText="Start Yearly"
-            link="/signup?plan=yearly"
-            isPopular={true}
-            accentColor="#FFD700"
-          />
-        </div>
+            {/* Yearly Plan */}
+            <PricingCard
+              title="Yearly"
+              price="$49.99"
+              period="/year"
+              description="Best value for year-round magic."
+              features={[
+                "Everything in Monthly",
+                "2 Months Free",
+                "Early Access to New Features",
+                "VIP Support"
+              ]}
+              buttonText="Start Yearly"
+              link="/signup?plan=yearly"
+              isPopular={true}
+              accentColor="#FFD700"
+            />
+          </div>
+        </ScrollReveal>
       </section>
 
       {/* Footer */}
@@ -586,6 +746,13 @@ export default async function LandingPage() {
           >
             CoastalCreativeLab.com
           </a>
+        </p>
+        <p style={{
+          fontSize: '0.85rem',
+          color: 'rgba(255,255,255,0.4)',
+          marginTop: '0.5rem'
+        }}>
+          Support: <a href="mailto:info@coastalcrativelab.com" style={{ color: 'inherit', textDecoration: 'underline' }}>info@coastalcrativelab.com</a>
         </p>
       </footer>
     </main>

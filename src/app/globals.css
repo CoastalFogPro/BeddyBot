@@ -570,3 +570,22 @@ select.input-base {
   scrollbar-width: thin;
   scrollbar-color: var(--color-surface) var(--color-background);
 }
+
+/* Safety Shield Animation */
+@keyframes float-shield {
+
+  0%,
+  100% {
+    transform: translateY(0px) scale(1);
+    filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5));
+  }
+
+  50% {
+    transform: translateY(-20px) scale(1.05);
+    filter: drop-shadow(0 25px 40px rgba(77, 150, 255, 0.5));
+  }
+}
+
+.animate-shield {
+  animation: float-shield 6s ease-in-out infinite;
+}
