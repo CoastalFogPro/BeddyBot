@@ -131,7 +131,7 @@ export default function Dashboard() {
                 {/* Usage Indicator */}
                 {userStatus && (
                     <UsageIndicator
-                        isPremium={userStatus.isPremium}
+                        isPremium={userStatus.subscriptionStatus === 'active' || userStatus.subscriptionStatus === 'trialing'}
                         count={userStatus.monthlyUsage}
                         limit={userStatus.monthlyLimit}
                         savedCount={userStatus.savedCount}
