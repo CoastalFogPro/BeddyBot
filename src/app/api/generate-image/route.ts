@@ -64,7 +64,7 @@ export async function POST(request: Request) {
             );
         }
 
-        const prompt = `A magical, child-friendly ${style} illustration of ${theme}. Soft lighting, warm colors, suitable for a bedtime story background. No text in the image.`;
+        const prompt = `A magical, child-friendly ${style} illustration of ${theme}. \n\nIMPORTANT SAFETY GUIDELINES:\n- The image MUST be cute, innocent, and bright.\n- NO scary elements, NO dark shadows, NO monsters, NO weapons, NO violence.\n- If the theme suggests something scary (like a dragon), depict it as a cute, round, friendly baby version.\n- Soft lighting, warm pastel or vibrant colors.\n- Suitable for a toddler's storybook.\n- No text in the image.`;
 
         const response = await openai.images.generate({
             model: "dall-e-3",

@@ -40,7 +40,9 @@ export default function StoryForm({ initialData }: StoryFormProps) {
         name: 'James',
         age: '5',
         gender: 'Boy',
-        theme: 'Space Adventure'
+        theme: 'Space Adventure',
+        style: 'rhyme',
+        narrator: 'female'
     });
 
     // Sync state with props when they change
@@ -151,6 +153,72 @@ export default function StoryForm({ initialData }: StoryFormProps) {
                         required
                     />
                 )}
+            </div>
+
+            <div className="form-group">
+                <label style={{ display: 'block', marginBottom: '0.75rem', fontWeight: '500' }}>Story Style</label>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '0.75rem' }}>
+                    {[
+                        { id: 'rhyme', label: 'Rhyme & Rattle', icon: '🎵', desc: 'Bouncy Seuss-like rhymes' },
+                        { id: 'funny', label: 'Funny & Flat', icon: '🤪', desc: 'Silly & deadpan humor' },
+                        { id: 'snuggle', label: 'Snuggle & Dream', icon: '🌙', desc: 'Calm, sensory & sleepy' },
+                        { id: 'interactive', label: 'Talk-to-Me', icon: '🗣️', desc: 'Breaks the 4th wall!' },
+                        { id: 'adventure', label: 'Grand Adventure', icon: '⚔️', desc: 'Cinematic journey' },
+                    ].map((style) => (
+                        <div
+                            key={style.id}
+                            onClick={() => setFormData({ ...formData, style: style.id })}
+                            style={{
+                                border: formData.style === style.id ? '2px solid var(--color-primary)' : '1px solid rgba(255,255,255,0.1)',
+                                background: formData.style === style.id ? 'rgba(255, 159, 67, 0.1)' : 'rgba(255,255,255,0.05)',
+                                padding: '0.75rem',
+                                borderRadius: '12px',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: '0.25rem'
+                            }}
+                        >
+                            <div style={{ fontSize: '1.2rem' }}>{style.icon}</div>
+                            <div style={{ fontWeight: 'bold', fontSize: '0.9rem' }}>{style.label}</div>
+                            <div style={{ fontSize: '0.75rem', opacity: 0.7, lineHeight: '1.2' }}>{style.desc}</div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            <div className="form-group">
+                <label style={{ display: 'block', marginBottom: '0.75rem', fontWeight: '500' }}>Narrator Voice</label>
+                <div style={{ display: 'flex', gap: '1rem' }}>
+                    {[
+                        { id: 'female', label: 'Mama Bear', icon: '👩' },
+                        { id: 'male', label: 'Papa Bear', icon: '👨' },
+                        // { id: 'kid', label: 'Kiddo', icon: '🧒' } // Future expansion
+                    ].map((n) => (
+                        <div
+                            key={n.id}
+                            onClick={() => setFormData({ ...formData, narrator: n.id })}
+                            style={{
+                                flex: 1,
+                                border: formData.narrator === n.id ? '2px solid var(--color-primary)' : '1px solid rgba(255,255,255,0.1)',
+                                background: formData.narrator === n.id ? 'rgba(255, 159, 67, 0.1)' : 'rgba(255,255,255,0.05)',
+                                padding: '1rem',
+                                borderRadius: '12px',
+                                cursor: 'pointer',
+                                transition: 'all 0.2s',
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '0.5rem',
+                                fontWeight: formData.narrator === n.id ? 'bold' : 'normal'
+                            }}
+                        >
+                            <span style={{ fontSize: '1.5rem' }}>{n.icon}</span>
+                            <span>{n.label}</span>
+                        </div>
+                    ))}
+                </div>
             </div>
 
             <button

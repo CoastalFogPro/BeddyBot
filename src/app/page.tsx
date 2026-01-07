@@ -8,6 +8,7 @@ import { db } from '@/db';
 import { children, stories } from '@/db/schema';
 import { eq, desc } from 'drizzle-orm';
 import ScrollReveal from '@/components/Landing/ScrollReveal';
+import AppShowcase from '@/components/Landing/AppShowcase';
 
 export default async function LandingPage() {
   const session = await auth();
@@ -133,7 +134,7 @@ export default async function LandingPage() {
         {/* LEFT COMPONENT: Hero Image (Desktop Left) */}
         <div className="hero-blob-container">
           <Image
-            src="/hero-robot.png"
+            src="/hero-robot-reading.jpg"
             alt="BeddyBot Reading a Story"
             width={500}
             height={500}
@@ -290,13 +291,15 @@ export default async function LandingPage() {
       <section style={{
         maxWidth: '1200px',
         margin: '0 auto 2rem',
-        padding: '0 2rem',
+        padding: '4rem 2rem',
         display: 'flex',
-        flexDirection: 'column', // Mobile first default, we'll use a responsive grid if needed but flex column is safe for simple stacking
+        flexDirection: 'column',
         alignItems: 'center',
         gap: '3rem',
         position: 'relative',
-        zIndex: 1
+        zIndex: 1,
+        background: 'linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.2) 100%)',
+        borderRadius: '40px'
       }}>
         <ScrollReveal style={{ width: '100%' }}>
           <div style={{
@@ -429,12 +432,15 @@ export default async function LandingPage() {
       {/* App Interface Showcase */}
       <section style={{
         padding: '2rem 2rem 6rem',
-        maxWidth: '1400px',
+        maxWidth: '1200px',
         margin: '0 auto',
         width: '100%',
         position: 'relative',
         zIndex: 1,
-        overflow: 'hidden'
+        overflow: 'hidden',
+        background: 'linear-gradient(180deg, rgba(255,255,255,0.02) 0%, rgba(255,255,255,0.05) 100%)',
+        marginTop: '2rem',
+        borderRadius: '40px'
       }}>
         <ScrollReveal>
           {/* Section Header */}
@@ -457,164 +463,9 @@ export default async function LandingPage() {
             </p>
           </div>
 
-          {/* Screenshots Grid */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
-            gap: '3rem',
-            alignItems: 'center'
-          }}>
-            {/* Screenshot 1 - Dashboard */}
-            <div style={{ animation: 'float-screenshot 6s ease-in-out infinite', animationDelay: '0s' }}>
-              <div className="screenshot-float" style={{
-                position: 'relative',
-                borderRadius: '24px',
-                overflow: 'hidden',
-                boxShadow: '0 30px 80px rgba(0, 0, 0, 0.5)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.6), rgba(26, 34, 56, 0.3))'
-              }}>
-                <Image
-                  src="/mockup-dashboard.png"
-                  alt="Magical Family Dashboard"
-                  width={600}
-                  height={800}
-                  style={{ width: '100%', height: 'auto', display: 'block' }}
-                />
-                <div style={{
-                  position: 'absolute',
-                  bottom: '1.5rem',
-                  left: '1.5rem',
-                  right: '1.5rem',
-                  background: 'rgba(0, 0, 0, 0.8)',
-                  backdropFilter: 'blur(10px)',
-                  padding: '1rem',
-                  borderRadius: '12px',
-                  border: '1px solid rgba(255,255,255,0.1)'
-                }}>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
-                    🏰 Your Family Kingdom
-                  </h3>
-                  <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
-                    Manage profiles and save favorite stories securely
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Screenshot 1.5 - Profile */}
-            <div style={{ animation: 'float-screenshot 6s ease-in-out infinite', animationDelay: '1s' }}>
-              <div className="screenshot-float" style={{
-                position: 'relative',
-                borderRadius: '24px',
-                overflow: 'hidden',
-                boxShadow: '0 30px 80px rgba(107, 203, 119, 0.3)',
-                border: '1px solid rgba(107, 203, 119, 0.2)',
-                background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.6), rgba(26, 34, 56, 0.3))'
-              }}>
-                <Image
-                  src="/mockup-profile.png"
-                  alt="Create Child Profiles"
-                  width={600}
-                  height={800}
-                  style={{ width: '100%', height: 'auto', display: 'block' }}
-                />
-                <div style={{
-                  position: 'absolute',
-                  bottom: '1.5rem',
-                  left: '1.5rem',
-                  right: '1.5rem',
-                  background: 'rgba(0, 0, 0, 0.8)',
-                  backdropFilter: 'blur(10px)',
-                  padding: '1rem',
-                  borderRadius: '12px',
-                  border: '1px solid rgba(107, 203, 119, 0.2)'
-                }}>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
-                    👤 Create Personal Profiles
-                  </h3>
-                  <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
-                    Set the age and name for perfect stories
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Screenshot 2 - Create */}
-            <div style={{ animation: 'float-screenshot 6s ease-in-out infinite', animationDelay: '2s' }}>
-              <div className="screenshot-float" style={{
-                position: 'relative',
-                borderRadius: '24px',
-                overflow: 'hidden',
-                boxShadow: '0 30px 80px rgba(255, 159, 67, 0.3)',
-                border: '1px solid rgba(255, 159, 67, 0.2)',
-                background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.6), rgba(26, 34, 56, 0.3))'
-              }}>
-                <Image
-                  src="/mockup-create.png"
-                  alt="Easy Story Creation"
-                  width={600}
-                  height={800}
-                  style={{ width: '100%', height: 'auto', display: 'block' }}
-                />
-                <div style={{
-                  position: 'absolute',
-                  bottom: '1.5rem',
-                  left: '1.5rem',
-                  right: '1.5rem',
-                  background: 'rgba(0, 0, 0, 0.8)',
-                  backdropFilter: 'blur(10px)',
-                  padding: '1rem',
-                  borderRadius: '12px',
-                  border: '1px solid rgba(255, 159, 67, 0.2)'
-                }}>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
-                    ✨ Simple Personalization
-                  </h3>
-                  <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
-                    Just choose a theme and let magic happen
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Screenshot 3 - Result */}
-            <div style={{ animation: 'float-screenshot 6s ease-in-out infinite', animationDelay: '4s' }}>
-              <div className="screenshot-float" style={{
-                position: 'relative',
-                borderRadius: '24px',
-                overflow: 'hidden',
-                boxShadow: '0 30px 80px rgba(77, 150, 255, 0.3)',
-                border: '1px solid rgba(77, 150, 255, 0.2)',
-                background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.6), rgba(26, 34, 56, 0.3))'
-              }}>
-                <Image
-                  src="/mockup-story.png"
-                  alt="Beautiful Story Results"
-                  width={600}
-                  height={800}
-                  style={{ width: '100%', height: 'auto', display: 'block' }}
-                />
-                <div style={{
-                  position: 'absolute',
-                  bottom: '1.5rem',
-                  left: '1.5rem',
-                  right: '1.5rem',
-                  background: 'rgba(0, 0, 0, 0.8)',
-                  backdropFilter: 'blur(10px)',
-                  padding: '1rem',
-                  borderRadius: '12px',
-                  border: '1px solid rgba(77, 150, 255, 0.2)'
-                }}>
-                  <h3 style={{ fontSize: '1.2rem', fontWeight: '700', marginBottom: '0.5rem' }}>
-                    📚 Beautiful Adventures
-                  </h3>
-                  <p style={{ fontSize: '0.9rem', opacity: 0.8, margin: 0 }}>
-                    Illustrated tales tailored just for them
-                  </p>
-                </div>
-              </div>
-            </div>
+          {/* Interactive Feature Showcase */}
+          <div style={{ marginTop: '3rem' }}>
+            <AppShowcase />
           </div>
         </ScrollReveal>
       </section>
@@ -639,7 +490,11 @@ export default async function LandingPage() {
         margin: '0 auto',
         width: '100%',
         position: 'relative',
-        zIndex: 1
+        zIndex: 1,
+        background: 'linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(20,20,40,0.6) 100%)',
+        marginTop: '2rem',
+        borderRadius: '40px 40px 0 0',
+        borderTop: '1px solid rgba(255,255,255,0.05)'
       }}>
         <ScrollReveal>
           <div style={{ textAlign: 'center', marginBottom: '4rem' }}>

@@ -69,7 +69,7 @@ export default function StoryView() {
             const res = await fetch('/api/audio/speech', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: fullText }),
+                body: JSON.stringify({ text: fullText, narrator: requestedNarrator }),
             });
 
             if (!res.ok) throw new Error('Failed to generate audio');
@@ -115,6 +115,8 @@ export default function StoryView() {
     const childAge = searchParams.get('age') || '5';
     const childGender = searchParams.get('gender') || 'Boy';
     const requestedTheme = searchParams.get('theme') || 'Space Adventure';
+    const requestedStyle = searchParams.get('style') || 'rhyme';
+    const requestedNarrator = searchParams.get('narrator') || 'female';
 
     // Flag to prevent double-firing in Strict Mode
     const hasFetchedRef = useRef(false);
@@ -141,7 +143,8 @@ export default function StoryView() {
                                 name: childName,
                                 age: childAge,
                                 gender: childGender,
-                                theme: requestedTheme
+                                theme: requestedTheme,
+                                style: requestedStyle
                             })
                         }),
                         fetch('/api/generate-image', {
