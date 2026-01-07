@@ -3,8 +3,13 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 
+export const dynamic = "force-dynamic";
+
 export default function DebugPage() {
-    const { data: session, status: sessionStatus } = useSession(); // Access status to check loading state
+    const sessionObj = useSession();
+    const session = sessionObj?.data;
+    const sessionStatus = sessionObj?.status;
+
     const [status, setStatus] = useState<any>(null);
     const [syncResult, setSyncResult] = useState<any>(null);
     const [loading, setLoading] = useState(false);
