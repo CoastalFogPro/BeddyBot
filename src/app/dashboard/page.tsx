@@ -136,6 +136,7 @@ export default function Dashboard() {
                         limit={userStatus.monthlyLimit}
                         savedCount={userStatus.savedCount}
                         savedLimit={userStatus.savedLimit}
+                        subscriptionEndDate={userStatus.subscriptionEndDate}
                     />
                 )}
 

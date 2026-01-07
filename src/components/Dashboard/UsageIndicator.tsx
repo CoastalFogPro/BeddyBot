@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Zap } from 'lucide-react';
+import { Zap, Settings, CreditCard } from 'lucide-react';
 import Link from 'next/link';
 
 interface UsageIndicatorProps {
@@ -8,11 +9,41 @@ interface UsageIndicatorProps {
     limit: number;
     savedCount?: number;
     savedLimit?: number;
+    subscriptionEndDate?: string | null;
 }
 
-export default function UsageIndicator({ isPremium, count, limit, savedCount, savedLimit }: UsageIndicatorProps) {
+export default function UsageIndicator({ isPremium, count, limit, savedCount, savedLimit, subscriptionEndDate }: UsageIndicatorProps) {
     const percentage = Math.min((count / limit) * 100, 100);
     const isNearLimit = percentage >= 80;
+    const [loading, setLoading] = useState(false);
+
+    const handlePortal = async () => {
+        setLoading(true);
+        try {
+            const res = await fetch('/api/stripe/portal', {
+                method: 'POST',
+            });
+            const data = await res.json();
+            if (data.url) {
+                window.location.href = data.url;
+            } else {
+                alert('Failed to open billing portal');
+                setLoading(false);
+            }
+        } catch (error) {
+            console.error(error);
+            setLoading(false);
+        }
+    };
+
+    const formatDate = (dateString: string) => {
+        if (!dateString) return 'N/A';
+        return new Date(dateString).toLocaleDateString('en-US', {
+            month: 'long',
+            day: 'numeric',
+            year: 'numeric'
+        });
+    };
 
     return (
         <div style={{
@@ -50,8 +81,28 @@ export default function UsageIndicator({ isPremium, count, limit, savedCount, sa
                     <strong>{count}</strong> / <strong>{limit}</strong> Stories Generated This Month
                 </div>
                 {savedLimit && (
-                    <div style={{ fontSize: '0.8rem', opacity: 0.5, marginBottom: '1rem' }}>
+                    <div style={{ fontSize: '0.8rem', opacity: 0.5, marginBottom: '0.5rem' }}>
                         (Library: {savedCount} / {savedLimit} stories saved)
+                    </div>
+                )}
+
+                {/* Renewal Date Stamp */}
+                {isPremium && subscriptionEndDate && (
+                    <div style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.4rem',
+                        background: 'rgba(16, 185, 129, 0.1)',
+                        color: '#10b981',
+                        padding: '0.2rem 0.6rem',
+                        borderRadius: '6px',
+                        fontSize: '0.8rem',
+                        fontWeight: '600',
+                        marginTop: '0.5rem',
+                        marginBottom: '1rem',
+                        border: '1px solid rgba(16, 185, 129, 0.2)'
+                    }}>
+                        <span>🔄 Renews: {formatDate(subscriptionEndDate)}</span>
                     </div>
                 )}
 
@@ -76,8 +127,8 @@ export default function UsageIndicator({ isPremium, count, limit, savedCount, sa
                 </div>
             </div>
 
-            <div style={{ textAlign: 'right' }}>
-                {!isPremium && (
+            <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', gap: '0.5rem', alignItems: 'flex-end' }}>
+                {!isPremium ? (
                     <Link href="/dashboard/subscription" style={{ textDecoration: 'none' }}>
                         <motion.button
                             whileHover={{ scale: 1.05 }}
@@ -99,9 +150,32 @@ export default function UsageIndicator({ isPremium, count, limit, savedCount, sa
                             <Zap size={18} fill="white" /> Upgrade to Unlimited
                         </motion.button>
                     </Link>
+                ) : (
+                    <motion.button
+                        onClick={handlePortal}
+                        disabled={loading}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        style={{
+                            background: 'rgba(255,255,255,0.1)',
+                            color: 'white',
+                            border: '1px solid rgba(255,255,255,0.2)',
+                            padding: '0.6rem 1.2rem',
+                            borderRadius: '12px',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            fontSize: '0.9rem'
+                        }}
+                    >
+                        {loading ? 'Loading...' : <><CreditCard size={16} /> Manage Subscription</>}
+                    </motion.button>
                 )}
+
                 {isPremium && isNearLimit && (
-                    <div style={{ color: '#ef4444', fontWeight: '600' }}>Running low on magic?</div>
+                    <div style={{ color: '#ef4444', fontWeight: '600', fontSize: '0.9rem' }}>Running low on magic?</div>
                 )}
             </div>
         </div>

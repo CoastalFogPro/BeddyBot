@@ -15,7 +15,8 @@ export async function GET(req: Request) {
         const [user] = await db.select({
             subscriptionStatus: users.subscriptionStatus,
             monthlyStoryCount: users.monthlyStoryCount,
-            role: users.role
+            role: users.role,
+            subscriptionEndDate: users.subscriptionEndDate // Fetch renewal date
         }).from(users).where(eq(users.id, session.user.id));
 
         // Count Stories
@@ -35,7 +36,8 @@ export async function GET(req: Request) {
             savedLimit,
             monthlyUsage: user?.monthlyStoryCount || 0,
             monthlyLimit,
-            subscriptionStatus: user?.subscriptionStatus || 'free'
+            subscriptionStatus: user?.subscriptionStatus || 'free',
+            subscriptionEndDate: user?.subscriptionEndDate // Send to frontend
         });
 
     } catch (error) {
