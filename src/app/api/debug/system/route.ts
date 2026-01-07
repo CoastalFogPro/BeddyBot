@@ -7,7 +7,7 @@ import { auth } from '@/auth';
 
 export async function GET() {
     const session = await auth();
-    if (!session) return NextResponse.json({ error: "Unauthorized" });
+    if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" });
 
     // Fetch full user record
     const [dbUser] = await db.select().from(users).where(eq(users.id, session.user.id));
