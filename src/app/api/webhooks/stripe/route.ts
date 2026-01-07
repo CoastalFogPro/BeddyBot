@@ -82,5 +82,36 @@ export async function POST(req: Request) {
             .where(eq(users.stripeCustomerId, subscription.customer as string));
     }
 
+    if (event.type === 'charge.refunded') {
+        const charge = event.data.object as any;
+        // If this charge is linked to an invoice (subscription), handle the cancellation
+        if (charge.invoice) {
+            try {
+                const invoiceId = typeof charge.invoice === 'string' ? charge.invoice : charge.invoice.id;
+                const invoice = await stripe.invoices.retrieve(invoiceId) as any;
+
+                if (invoice.subscription) {
+                    const subscriptionId = typeof invoice.subscription === 'string' ? invoice.subscription : invoice.subscription.id;
+
+                    console.log(`Webhook: Charge refunded (${charge.id}). Canceling subscription ${subscriptionId}...`);
+
+                    // 1. Cancel the subscription in Stripe immediately
+                    await stripe.subscriptions.cancel(subscriptionId);
+
+                    // 2. Update DB to revoke access
+                    await db.update(users)
+                        .set({
+                            subscriptionStatus: 'canceled',
+                            planType: null,
+                            subscriptionEndDate: null, // Revoke immediately
+                        })
+                        .where(eq(users.stripeCustomerId, invoice.customer as string));
+                }
+            } catch (err) {
+                console.error("Error handling charge.refunded:", err);
+            }
+        }
+    }
+
     return new NextResponse('Webhook Received', { status: 200 });
 }
