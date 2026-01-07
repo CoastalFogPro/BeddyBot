@@ -48,6 +48,9 @@ export async function POST(req: Request) {
             await db.update(users)
                 .set({ stripeCustomerId: customerId })
                 .where(eq(users.id, user.id));
+        } else {
+            // Ensure Stripe has the latest email for receipts
+            await stripe.customers.update(customerId, { email: user.email });
         }
 
         const checkoutSession = await stripe.checkout.sessions.create({
