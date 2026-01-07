@@ -86,7 +86,7 @@ export async function PATCH(
 
     try {
         const { id } = await params;
-        const { role, password, name, email } = await request.json();
+        const { role, password, name, email, subscriptionStatus } = await request.json();
 
         const updates: any = {};
         if (role) updates.role = role;
@@ -94,6 +94,17 @@ export async function PATCH(
         if (email) updates.email = email;
         if (password) {
             updates.password = await bcrypt.hash(password, 10);
+        }
+
+        if (subscriptionStatus) {
+            updates.subscriptionStatus = subscriptionStatus;
+
+            // If reverting to free, clear other data
+            if (subscriptionStatus === 'free' || subscriptionStatus === 'canceled') {
+                updates.planType = null;
+                updates.subscriptionEndDate = null;
+                // We keep stripeCustomerId so they can re-subscribe easily later
+            }
         }
 
         await db.update(users).set(updates).where(eq(users.id, id));

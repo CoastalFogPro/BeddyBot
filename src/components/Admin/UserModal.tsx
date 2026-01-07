@@ -8,6 +8,7 @@ interface UserData {
     name: string;
     email: string;
     role: string;
+    subscriptionStatus?: string;
 }
 
 interface UserModalProps {
@@ -23,6 +24,7 @@ export default function UserModal({ user, onClose, onSave }: UserModalProps) {
         email: user?.email || '',
         password: '',
         role: user?.role || 'user',
+        subscriptionStatus: user?.subscriptionStatus || 'free',
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -172,6 +174,38 @@ export default function UserModal({ user, onClose, onSave }: UserModalProps) {
                                 }}
                             >
                                 <Shield size={18} /> Admin
+                            </button>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label style={{ display: 'block', color: '#94a3b8', fontSize: '0.9rem', marginBottom: '0.5rem' }}>Subscription Status</label>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                            <button
+                                type="button"
+                                onClick={() => setFormData({ ...formData, subscriptionStatus: 'free' })}
+                                style={{
+                                    padding: '0.75rem', borderRadius: '12px', border: '1px solid',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer',
+                                    background: formData.subscriptionStatus === 'free' ? '#64748b' : '#0f172a',
+                                    borderColor: formData.subscriptionStatus === 'free' ? '#64748b' : 'rgba(255,255,255,0.1)',
+                                    color: formData.subscriptionStatus === 'free' ? 'white' : '#94a3b8'
+                                }}
+                            >
+                                Free
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setFormData({ ...formData, subscriptionStatus: 'active' })}
+                                style={{
+                                    padding: '0.75rem', borderRadius: '12px', border: '1px solid',
+                                    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px', cursor: 'pointer',
+                                    background: formData.subscriptionStatus === 'active' ? '#10b981' : '#0f172a',
+                                    borderColor: formData.subscriptionStatus === 'active' ? '#10b981' : 'rgba(255,255,255,0.1)',
+                                    color: formData.subscriptionStatus === 'active' ? 'white' : '#94a3b8'
+                                }}
+                            >
+                                Active (Premium)
                             </button>
                         </div>
                     </div>

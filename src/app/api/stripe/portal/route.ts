@@ -17,8 +17,20 @@ export async function POST(req: Request) {
             return new NextResponse("No customer record found", { status: 404 });
         }
 
+        let customerId = dbUser[0].stripeCustomerId;
+
+        // EMERGENCY FIX: If using a Manual ID, search for the real active one 
+        if (customerId && customerId.includes('MANUAL')) {
+            const customers = await stripe.customers.list({ email: dbUser[0].email, limit: 1 });
+            if (customers.data.length > 0) {
+                customerId = customers.data[0].id;
+            } else {
+                return new NextResponse("Cannot create portal: No valid Stripe Customer found.", { status: 404 });
+            }
+        }
+
         const portalSession = await stripe.billingPortal.sessions.create({
-            customer: dbUser[0].stripeCustomerId,
+            customer: customerId,
             return_url: `${process.env.NEXT_PUBLIC_APP_URL}/dashboard`,
         });
 
