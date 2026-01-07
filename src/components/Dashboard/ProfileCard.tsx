@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from 'framer-motion';
-import { User, Sparkles, Rocket } from 'lucide-react';
+import { User, Sparkles, Rocket, Trash2 } from 'lucide-react';
 
 interface ProfileCardProps {
     name: string;
@@ -9,9 +9,10 @@ interface ProfileCardProps {
     gender: 'Boy' | 'Girl' | string;
     isSelected?: boolean;
     onClick?: () => void;
+    onDelete?: () => void;
 }
 
-export default function ProfileCard({ name, age, gender, isSelected, onClick }: ProfileCardProps) {
+export default function ProfileCard({ name, age, gender, isSelected, onClick, onDelete }: ProfileCardProps) {
     // Theme logic
     const isGirl = gender === 'Girl';
 
@@ -62,6 +63,34 @@ export default function ProfileCard({ name, age, gender, isSelected, onClick }: 
             }}>
                 <Icon size={24} color="white" strokeWidth={2.5} />
             </div>
+
+            {/* Delete Button */}
+            {onDelete && (
+                <div
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault(); // Prevent Link navigation
+                        onDelete();
+                    }}
+                    style={{
+                        position: 'absolute',
+                        top: '1.5rem',
+                        right: '1.5rem',
+                        background: 'rgba(0, 0, 0, 0.2)',
+                        width: '36px',
+                        height: '36px',
+                        borderRadius: '50%',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        zIndex: 20,
+                        cursor: 'pointer',
+                        transition: 'background 0.2s'
+                    }}
+                >
+                    <Trash2 size={18} color="white" />
+                </div>
+            )}
 
             {/* Text Content */}
             <div style={{ color: 'white', zIndex: 2 }}>

@@ -685,7 +685,7 @@ export default async function LandingPage() {
               period="/month"
               description="Unlimited stories for active imaginations."
               features={[
-                "Unlimited Stories Generated",
+                "40 Stories per Month",
                 "Save 30 Stories Forever",
                 "Priority Generation",
                 "Access to All Future Story Themes"

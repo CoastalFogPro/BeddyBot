@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 
         const isPremium = dbUser?.subscriptionStatus === 'active';
         const isAdmin = dbUser?.role === 'admin';
-        const limit = isAdmin ? 999999 : (isPremium ? 30 : 1);
+        const limit = isAdmin ? 999999 : (isPremium ? 40 : 1);
 
         if (storyCount >= limit) {
             console.warn(`User ${session.user.id} reached limit but tried to generate image.`);

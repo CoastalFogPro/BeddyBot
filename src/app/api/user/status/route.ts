@@ -13,21 +13,28 @@ export async function GET(req: Request) {
 
         // Fetch User Subscription Status
         const [user] = await db.select({
-            subscriptionStatus: users.subscriptionStatus
+            subscriptionStatus: users.subscriptionStatus,
+            monthlyStoryCount: users.monthlyStoryCount,
+            role: users.role
         }).from(users).where(eq(users.id, session.user.id));
 
         // Count Stories
         const userStories = await db.select({ id: stories.id }).from(stories).where(eq(stories.userId, session.user.id));
-        const storyCount = userStories.length;
+        const savedCount = userStories.length;
 
         // Determine Limit
         const isPremium = user?.subscriptionStatus === 'active';
-        const limit = isPremium ? 30 : 1;
+        const isAdmin = user?.role === 'admin';
+
+        const savedLimit = isPremium ? 30 : 1;
+        const monthlyLimit = isAdmin ? 9999 : (isPremium ? 40 : 1);
 
         return NextResponse.json({
             isPremium,
-            storyCount,
-            limit,
+            savedCount,
+            savedLimit,
+            monthlyUsage: user?.monthlyStoryCount || 0,
+            monthlyLimit,
             subscriptionStatus: user?.subscriptionStatus || 'free'
         });
 

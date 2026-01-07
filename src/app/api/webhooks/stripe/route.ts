@@ -55,6 +55,8 @@ export async function POST(req: Request) {
                 .set({
                     subscriptionStatus: 'active',
                     subscriptionEndDate: new Date(subscription.current_period_end * 1000),
+                    monthlyStoryCount: 0, // Reset usage on successful payment (renewal or new)
+                    lastStoryReset: new Date(),
                 })
                 .where(eq(users.id, user[0].id));
         }

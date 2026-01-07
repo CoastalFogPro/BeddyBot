@@ -45,7 +45,23 @@ export default function Dashboard() {
         }
     };
 
-    const handleDeleteStory = async (storyId: string) => {
+    const handleDeleteProfile = async (childId: string) => {
+        if (!window.confirm("Are you sure? This will delete the profile AND all their saved stories forever.")) return;
+
+        try {
+            const res = await fetch(`/api/children/${childId}`, { method: 'DELETE' });
+            if (res.ok) {
+                // Refresh all data to ensure stories and counts are synced
+                fetchData();
+            } else {
+                alert("Failed to delete profile.");
+            }
+        } catch (e) {
+            console.error("Delete profile error", e);
+        }
+    };
+
+    const handleDeleteStory = async (storyId: string) => { // keep existing delete story logic
         try {
             const res = await fetch(`/api/stories/${storyId}`, { method: 'DELETE' });
             if (res.ok) {
@@ -109,8 +125,10 @@ export default function Dashboard() {
                 {userStatus && (
                     <UsageIndicator
                         isPremium={userStatus.isPremium}
-                        count={userStatus.storyCount}
-                        limit={userStatus.limit}
+                        count={userStatus.monthlyUsage}
+                        limit={userStatus.monthlyLimit}
+                        savedCount={userStatus.savedCount}
+                        savedLimit={userStatus.savedLimit}
                     />
                 )}
 
@@ -168,6 +186,7 @@ export default function Dashboard() {
                                     name={child.name}
                                     age={child.age}
                                     gender={child.gender}
+                                    onDelete={() => handleDeleteProfile(child.id)}
                                 />
                             </Link>
                         ))}

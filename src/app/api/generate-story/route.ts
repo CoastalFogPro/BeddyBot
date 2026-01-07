@@ -23,18 +23,17 @@ export async function POST(request: Request) {
     // 1. Get User Status
     const [dbUser] = await db.select().from(users).where(eq(users.id, session.user.id)).limit(1);
 
-    // 2. Count Stories
-    const userStrategies = await db.select({ id: stories.id }).from(stories).where(eq(stories.userId, session.user.id));
-    const storyCount = userStrategies.length;
+    // 2. Check Limits
+    const currentUsage = dbUser?.monthlyStoryCount || 0;
 
     // 3. Define Limits
     const isPremium = dbUser?.subscriptionStatus === 'active';
     const isAdmin = dbUser?.role === 'admin';
-    const limit = isAdmin ? 999999 : (isPremium ? 30 : 1);
+    const limit = isAdmin ? 999999 : (isPremium ? 40 : 1);
 
-    if (storyCount >= limit) {
+    if (currentUsage >= limit) {
         return NextResponse.json({
-            error: isPremium ? 'Story limit reached (30).' : 'Free limit reached. Upgrade to create more!',
+            error: isPremium ? `Monthly limit reached (${limit} stories).` : 'Free limit reached. Upgrade to create more!',
             code: 'LIMIT_REACHED'
         }, { status: 403 });
     }
@@ -118,6 +117,11 @@ export async function POST(request: Request) {
         });
 
         const result = JSON.parse(completion.choices[0].message.content || '{}');
+
+        // Increment Usage
+        await db.update(users)
+            .set({ monthlyStoryCount: currentUsage + 1 })
+            .where(eq(users.id, session.user.id));
 
         return NextResponse.json(result);
     } catch (error) {

@@ -6,9 +6,11 @@ interface UsageIndicatorProps {
     isPremium: boolean;
     count: number;
     limit: number;
+    savedCount?: number;
+    savedLimit?: number;
 }
 
-export default function UsageIndicator({ isPremium, count, limit }: UsageIndicatorProps) {
+export default function UsageIndicator({ isPremium, count, limit, savedCount, savedLimit }: UsageIndicatorProps) {
     const percentage = Math.min((count / limit) * 100, 100);
     const isNearLimit = percentage >= 80;
 
@@ -44,9 +46,14 @@ export default function UsageIndicator({ isPremium, count, limit }: UsageIndicat
                     )}
                 </div>
 
-                <div style={{ fontSize: '0.9rem', opacity: 0.7, marginBottom: '1rem' }}>
-                    You have used <strong>{count}</strong> of your <strong>{limit}</strong> stories.
+                <div style={{ fontSize: '0.9rem', opacity: 0.7, marginBottom: '0.5rem' }}>
+                    <strong>{count}</strong> / <strong>{limit}</strong> Stories Generated This Month
                 </div>
+                {savedLimit && (
+                    <div style={{ fontSize: '0.8rem', opacity: 0.5, marginBottom: '1rem' }}>
+                        (Library: {savedCount} / {savedLimit} stories saved)
+                    </div>
+                )}
 
                 {/* Progress Bar */}
                 <div style={{
