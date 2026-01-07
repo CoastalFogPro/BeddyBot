@@ -13,13 +13,35 @@ export async function POST(req: Request) {
         }
 
         const [dbUser] = await db.select().from(users).where(eq(users.id, session.user.id));
-        if (!dbUser?.stripeCustomerId) {
-            return NextResponse.json({ message: "No active subscription found (No Customer ID)" });
+
+        let stripeCustomerId = dbUser?.stripeCustomerId;
+
+        // FALLBACK: If no ID, search Stripe by email (Self-Healing)
+        if (!stripeCustomerId && session.user.email) {
+            console.log(`Sync: No ID found. Searching Stripe for ${session.user.email}...`);
+            const customers = await stripe.customers.list({
+                email: session.user.email,
+                limit: 1
+            });
+
+            if (customers.data.length > 0) {
+                stripeCustomerId = customers.data[0].id;
+                console.log(`Sync: Found customer ${stripeCustomerId}. Updating DB...`);
+                await db.update(users)
+                    .set({ stripeCustomerId: stripeCustomerId })
+                    .where(eq(users.id, session.user.id));
+            } else {
+                return NextResponse.json({ message: "No active subscription found (User not in Stripe)" });
+            }
+        }
+
+        if (!stripeCustomerId) {
+            return NextResponse.json({ message: "No Customer ID found" });
         }
 
         // Fetch subscriptions from Stripe
         const subscriptions = await stripe.subscriptions.list({
-            customer: dbUser.stripeCustomerId,
+            customer: stripeCustomerId,
             status: 'all',
             limit: 1,
         });
