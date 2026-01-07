@@ -15,42 +15,62 @@ export async function POST(req: Request) {
         const [dbUser] = await db.select().from(users).where(eq(users.id, session.user.id));
 
         let stripeCustomerId = dbUser?.stripeCustomerId;
+        let subscriptionFound: any = null;
 
-        // FALLBACK: If no ID, search Stripe by email (Self-Healing)
-        if (!stripeCustomerId && session.user.email) {
-            console.log(`Sync: No ID found. Searching Stripe for ${session.user.email}...`);
-            const customers = await stripe.customers.list({
-                email: session.user.email,
-                limit: 1
+        // 1. If we have an ID, check it first
+        if (stripeCustomerId) {
+            const subscriptions = await stripe.subscriptions.list({
+                customer: stripeCustomerId,
+                status: 'all',
+                limit: 1,
             });
-
-            if (customers.data.length > 0) {
-                stripeCustomerId = customers.data[0].id;
-                console.log(`Sync: Found customer ${stripeCustomerId}. Updating DB...`);
-                await db.update(users)
-                    .set({ stripeCustomerId: stripeCustomerId })
-                    .where(eq(users.id, session.user.id));
-            } else {
-                return NextResponse.json({ message: "No active subscription found (User not in Stripe)" });
+            if (subscriptions.data.length > 0) {
+                subscriptionFound = subscriptions.data[0];
             }
         }
 
-        if (!stripeCustomerId) {
-            return NextResponse.json({ message: "No Customer ID found" });
+        // 2. Deep Search: If no ID or No Subs on current ID, search by email
+        if (!subscriptionFound && session.user.email) {
+            console.log(`Sync: No active sub on current ID (${stripeCustomerId}). Deep searching email ${session.user.email}...`);
+
+            const customers = await stripe.customers.list({
+                email: session.user.email,
+                limit: 5, // Check multiple duplicates
+                expand: ['data.subscriptions']
+            });
+
+            // Find the first customer with an active/trialing subscription
+            const payingCustomer = customers.data.find(c =>
+                // @ts-ignore
+                c.subscriptions && c.subscriptions.data.length > 0
+            );
+
+            if (payingCustomer) {
+                console.log(`Sync: Found UNLINKED paying customer ${payingCustomer.id}. Migrating DB...`);
+                // @ts-ignore
+                subscriptionFound = payingCustomer.subscriptions.data[0];
+                stripeCustomerId = payingCustomer.id;
+
+                // Update DB with the correct paying ID
+                await db.update(users)
+                    .set({ stripeCustomerId: stripeCustomerId })
+                    .where(eq(users.id, session.user.id));
+            }
         }
 
-        // Fetch subscriptions from Stripe
-        const subscriptions = await stripe.subscriptions.list({
-            customer: stripeCustomerId,
-            status: 'all',
-            limit: 1,
-        });
+        if (!subscriptionFound) {
+            // Confirm they are truly free
+            await db.update(users).set({
+                subscriptionStatus: 'free',
+                planType: null,
+                stripeSubscriptionId: null,
+                subscriptionEndDate: null,
+            }).where(eq(users.id, session.user.id));
 
-        if (subscriptions.data.length === 0) {
-            return NextResponse.json({ message: "No active subscription found in Stripe" });
+            return NextResponse.json({ message: "No active subscription found (Verified)" });
         }
 
-        const sub = subscriptions.data[0];
+        const sub = subscriptionFound;
 
         // Determine Plan Type logic (simplified)
         // You might want to map price IDs to plan names if strict

@@ -90,19 +90,19 @@ export default function Dashboard() {
         fetchData();
 
         // Check for checkout success
-        const params = new URLSearchParams(window.location.search);
-        if (params.get('success')) {
-            fetch('/api/stripe/sync', { method: 'POST' })
-                .then(res => res.json())
-                .then(data => {
-                    console.log("Auto-Synced Subscription:", data);
-                    // Re-fetch user status after sync
+        // Always attempt to sync on load (Self-Healing)
+        fetch('/api/stripe/sync', { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+                console.log("Subscription Sync Result:", data);
+                // If active, refresh status to show premium UI
+                if (data.status === 'active' || data.success) {
                     fetch('/api/user/status')
                         .then(r => r.json())
                         .then(status => setUserStatus(status));
-                })
-                .catch(err => console.error("Sync failed", err));
-        }
+                }
+            })
+            .catch(err => console.error("Sync failed", err));
     }, []);
 
     return (
