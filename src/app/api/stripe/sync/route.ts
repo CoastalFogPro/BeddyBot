@@ -82,7 +82,7 @@ export async function POST(req: Request) {
             subscriptionStatus: sub.status, // active, past_due, canceled, etc.
             planType: planType,
             stripeSubscriptionId: sub.id,
-            subscriptionEndDate: new Date((sub as any).current_period_end * 1000),
+            subscriptionEndDate: sub.current_period_end ? new Date(sub.current_period_end * 1000) : new Date(),
         }).where(eq(users.id, session.user.id));
 
         return NextResponse.json({
