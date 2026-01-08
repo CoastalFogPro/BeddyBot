@@ -466,45 +466,49 @@ export default async function LandingPage() {
               price="Free"
               description="Perfect for one bedtime story."
               features={[
-                "1 Free Story",
-                "Basic AI Narration",
-                "Web Access Only"
+                "1 Personalized Story",
+                "Standard Themes",
+                "Standard Audio"
               ]}
-              ctaText="Try for Free"
-              ctaLink="/signup"
+              buttonText="Create Free Account"
+              link="/signup"
+              isPopular={false}
             />
 
-            {/* Monthly Plan (Featured) */}
+            {/* Monthly Plan */}
             <PricingCard
               title="Monthly"
-              price="$5.99"
-              period="/mo"
-              description="Unlimited stories, cancel anytime."
+              price="$9.99"
+              period="/month"
+              description="Unlimited stories for active imaginations."
               features={[
-                "Unlimited Stories",
-                "Premium Voice Narration",
-                "Save & Replay Favorites",
-                "Priority Support"
+                "40 Stories per Month",
+                "Save 30 Stories Forever",
+                "Priority Generation",
+                "Access to All Future Story Themes"
               ]}
-              ctaText="Start Free Trial"
-              ctaLink="/signup"
+              buttonText="Start Monthly"
+              link="/signup?plan=monthly"
               isPopular={true}
+              accentColor="#4D96FF"
             />
 
             {/* Yearly Plan */}
             <PricingCard
               title="Yearly"
               price="$49.99"
-              period="/yr"
-              description="Best value for a year of magic."
+              period="/year"
+              description="Best value for year-round magic."
               features={[
-                "All Monthly Features",
-                "Save 25% vs Monthly",
-                "Exclusive Holiday Themes",
-                "Early Access to New Voices"
+                "Everything in Monthly",
+                "2 Months Free",
+                "Early Access to New Features",
+                "VIP Support"
               ]}
-              ctaText="Get Yearly Plan"
-              ctaLink="/signup"
+              buttonText="Start Yearly"
+              link="/signup?plan=yearly"
+              isPopular={false}
+              accentColor="#FFD700"
             />
           </div>
         </ScrollReveal>
@@ -523,10 +527,8 @@ export default async function LandingPage() {
         <p style={{ color: 'rgba(255,255,255,0.5)', marginBottom: '1rem' }}>
           © {new Date().getFullYear()} BeddyBot. All rights reserved.
         </p>
-        <div style={{ display: 'flex', gap: '2rem', justifyContent: 'center', fontSize: '0.9rem', color: 'rgba(255,255,255,0.5)' }}>
-          <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
-          <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
-          <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
+        <div style={{ display: 'flex', gap: '2rem', justifyContent: 'center', fontSize: '0.9rem', color: 'rgba(255,255,255,0.5)', position: 'relative', zIndex: 10 }}>
+          <a href="mailto:info@coastalcreativelab.com" className="hover:text-white transition-colors" style={{ textDecoration: 'underline', cursor: 'pointer' }}>Contact: info@coastalcreativelab.com</a>
         </div>
       </footer>
     </main>
@@ -537,104 +539,134 @@ export default async function LandingPage() {
 
 function FeatureCard({ icon, title, desc, accentColor }: { icon: string, title: string, desc: string, accentColor: string }) {
   return (
-    <div className="card-hover-effect" style={{
-      background: 'rgba(255, 255, 255, 0.03)',
-      border: '1px solid rgba(255, 255, 255, 0.05)',
+    <div style={{
+      background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.8), rgba(26, 34, 56, 0.4))',
+      backdropFilter: 'blur(20px)',
+      border: '1px solid rgba(255,255,255,0.1)',
       borderRadius: '24px',
-      padding: '2rem',
-      display: 'flex',
-      flexDirection: 'column',
-      gap: '1.5rem',
+      padding: '2.5rem',
       position: 'relative',
-      overflow: 'hidden'
-    }}>
+      overflow: 'hidden',
+      transition: 'all 0.3s ease',
+      cursor: 'pointer'
+    }}
+      className="feature-card-hover"
+    >
+      {/* Accent gradient overlay */}
       <div style={{
-        position: 'absolute', top: 0, left: 0, width: '100%', height: '4px',
-        background: accentColor.replace('0.2', '1') // Full opacity for border
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: '4px',
+        background: `linear-gradient(90deg, transparent, ${accentColor}, transparent)`,
+        opacity: 0.6
       }} />
 
+      {/* Icon Container */}
       <div style={{
-        width: '80px', height: '80px',
-        background: accentColor,
+        width: '80px',
+        height: '80px',
         borderRadius: '20px',
+        background: accentColor,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: '0.5rem'
+        marginBottom: '1.5rem',
+        boxShadow: `0 10px 30px ${accentColor}`,
+        position: 'relative'
       }}>
-        <Image src={icon} alt={title} width={50} height={50} style={{ objectFit: 'contain' }} />
+        <Image
+          src={icon}
+          alt={title}
+          width={50}
+          height={50}
+          style={{ filter: 'brightness(1.1)' }}
+        />
       </div>
 
-      <h3 style={{ fontSize: '1.5rem', fontWeight: '700' }}>{title}</h3>
-      <p style={{ color: 'rgba(255,255,255,0.7)', lineHeight: '1.6' }}>{desc}</p>
+      <h3 style={{
+        fontSize: '1.6rem',
+        fontWeight: '800',
+        marginBottom: '1rem',
+        color: 'white'
+      }}>
+        {title}
+      </h3>
+
+      <p style={{
+        fontSize: '1.05rem',
+        opacity: 0.85,
+        lineHeight: '1.7',
+        color: 'rgba(255,255,255,0.9)'
+      }}>
+        {desc}
+      </p>
     </div>
   );
 }
 
-interface PricingCardProps {
-  title: string;
-  price: string;
-  period?: string;
-  description: string;
-  features: string[];
-  ctaText: string;
-  ctaLink: string;
-  isPopular?: boolean;
-}
-
-function PricingCard({ title, price, period, description, features, ctaText, ctaLink, isPopular = false }: PricingCardProps) {
+function PricingCard({ title, price, period, description, features, buttonText, link, isPopular, accentColor = '#ffffff' }: any) {
   return (
     <div style={{
-      background: isPopular ? 'rgba(77, 150, 255, 0.1)' : 'rgba(255, 255, 255, 0.03)',
-      border: isPopular ? '2px solid #4D96FF' : '1px solid rgba(255, 255, 255, 0.1)',
-      borderRadius: '30px',
+      background: 'rgba(26, 34, 56, 0.6)',
+      border: isPopular ? `2px solid ${accentColor}` : '1px solid rgba(255,255,255,0.1)',
+      borderRadius: '24px',
       padding: '2.5rem',
       display: 'flex',
       flexDirection: 'column',
       position: 'relative',
+      overflow: 'hidden',
       transform: isPopular ? 'scale(1.05)' : 'none',
-      boxShadow: isPopular ? '0 20px 50px rgba(77, 150, 255, 0.15)' : 'none'
+      boxShadow: isPopular ? `0 20px 40px -10px ${accentColor}40` : 'none',
+      zIndex: isPopular ? 2 : 1
     }}>
       {isPopular && (
         <div style={{
-          position: 'absolute', top: '-15px', left: '50%', transform: 'translateX(-50%)',
-          background: '#4D96FF', color: 'white', padding: '0.5rem 1.5rem',
-          borderRadius: '50px', fontWeight: '700', fontSize: '0.9rem',
-          boxShadow: '0 5px 15px rgba(77, 150, 255, 0.4)'
+          position: 'absolute',
+          top: '0',
+          right: '0',
+          background: accentColor,
+          color: 'black',
+          padding: '0.5rem 1.5rem',
+          borderBottomLeftRadius: '20px',
+          fontWeight: 'bold',
+          fontSize: '0.8rem'
         }}>
-          Most Popular
+          POPULAR
         </div>
       )}
 
-      <h3 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '0.5rem', color: isPopular ? '#4D96FF' : 'white' }}>{title}</h3>
-      <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.2rem', marginBottom: '1rem' }}>
-        <span style={{ fontSize: '3rem', fontWeight: '800' }}>{price}</span>
-        {period && <span style={{ color: 'rgba(255,255,255,0.6)' }}>{period}</span>}
+      <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem', color: isPopular ? accentColor : 'white' }}>{title}</h3>
+      <div style={{ display: 'flex', alignItems: 'baseline', marginBottom: '1rem' }}>
+        <span style={{ fontSize: '2.5rem', fontWeight: '800' }}>{price}</span>
+        {period && <span style={{ opacity: 0.7, marginLeft: '5px' }}>{period}</span>}
       </div>
-      <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '2rem' }}>{description}</p>
+      <p style={{ opacity: 0.7, marginBottom: '2rem', minHeight: '3rem' }}>{description}</p>
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
+      <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem', flex: 1 }}>
         {features.map((feature: string, i: number) => (
-          <div key={i} style={{ display: 'flex', gap: '0.8rem', alignItems: 'center', color: 'rgba(255,255,255,0.9)' }}>
-            <div style={{ width: '20px', height: '20px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem' }}>✓</div>
+          <li key={i} style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem', opacity: 0.9 }}>
+            <span style={{ marginRight: '10px', color: isPopular ? accentColor : '#4bb543' }}>✓</span>
             {feature}
-          </div>
+          </li>
         ))}
-      </div>
+      </ul>
 
-      <Link href={ctaLink}>
+      <Link href={link} style={{ textDecoration: 'none' }}>
         <button style={{
           width: '100%',
           padding: '1rem',
-          borderRadius: '16px',
-          background: isPopular ? '#4D96FF' : 'rgba(255,255,255,0.1)',
-          color: 'white',
-          fontWeight: '700',
+          borderRadius: '12px',
           border: 'none',
+          background: isPopular ? accentColor : 'rgba(255,255,255,0.1)',
+          color: isPopular ? 'black' : 'white',
+          fontWeight: 'bold',
           cursor: 'pointer',
-          transition: 'all 0.2s'
+          transition: 'transform 0.2s',
+          fontSize: '1rem'
         }}>
-          {ctaText}
+          {buttonText}
         </button>
       </Link>
     </div>
