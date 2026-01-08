@@ -50,7 +50,7 @@ export async function POST(req: Request) {
         4. Do NOT include a title.
         `;
 
-        const imagePrompt = `A magical, child-friendly storybook illustration of ${theme || 'Magical Adventure'}. \n\nIMPORTANT SAFETY GUIDELINES:\n- The image MUST be cute, innocent, and bright.\n- NO scary elements, NO dark shadows, NO monsters, NO weapons, NO violence.\n- If the theme suggests something scary (like a dragon), depict it as a cute, round, friendly baby version.\n- Soft lighting, warm pastel or vibrant colors.\n- Suitable for a toddler's storybook.\n- No text in the image.`;
+        const imagePrompt = `A magical, child-friendly adventure illustration of ${theme || 'Magical Adventure'}. \n\nIMPORTANT SAFETY GUIDELINES:\n- The image MUST be cute, innocent, and bright.\n- NO scary elements, NO dark shadows, NO monsters, NO weapons, NO violence.\n- If the theme suggests something scary (like a dragon), depict it as a cute, round, friendly baby version.\n- Soft lighting, warm pastel or vibrant colors.\n- Suitable for a toddler's storybook.\n- No text in the image.`;
 
         const [textCompletion, imageCompletion] = await Promise.all([
             openai.chat.completions.create({

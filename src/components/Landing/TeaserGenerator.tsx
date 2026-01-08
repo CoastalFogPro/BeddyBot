@@ -344,9 +344,9 @@ export default function TeaserGenerator() {
                                 </div>
                             </div>
 
-                            <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1fr) 1.5fr', minHeight: '600px' }}>
+                            <div className="teaser-grid">
                                 {/* LEFT: IMAGE */}
-                                <div style={{ position: 'relative', background: '#000', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <div className="teaser-image-container">
                                     {result.imageUrl ? (
                                         <Image
                                             src={result.imageUrl}
@@ -388,7 +388,7 @@ export default function TeaserGenerator() {
                                 </div>
 
                                 {/* RIGHT: TEXT */}
-                                <div style={{ padding: '3rem', display: 'flex', flexDirection: 'column', maxHeight: '700px', overflowY: 'auto' }}>
+                                <div className="teaser-text-container">
                                     <h2 style={{ fontSize: '2.5rem', fontWeight: '800', lineHeight: 1.2, marginBottom: '2rem' }}>
                                         The Adventures of {formData.name}
                                     </h2>
