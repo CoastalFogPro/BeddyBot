@@ -1,27 +1,14 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Shield, Sparkles, Volume2, Star } from 'lucide-react';
+import { ArrowRight, Shield } from 'lucide-react';
 
 import { auth } from '@/auth';
-import StoryDemo from '@/components/Landing/StoryDemo';
-import { db } from '@/db';
-import { children, stories } from '@/db/schema';
-import { eq, desc } from 'drizzle-orm';
+import TeaserGenerator from '@/components/Landing/TeaserGenerator';
 import ScrollReveal from '@/components/Landing/ScrollReveal';
 import AppShowcase from '@/components/Landing/AppShowcase';
 
 export default async function LandingPage() {
   const session = await auth();
-
-  // --- STATIC DEMO STORY (Always Visible) ---
-  const demoStory = {
-    title: "Poppy and the Rocket Ship",
-    content: "Once upon a time, there was a brave girl named Poppy who loved the stars. One night, a friendly robot named BeddyBot landed in her backyard. 'Beep boop,' said the robot. 'Do you want to fly to the moon?' Poppy's eyes lit up with joy. She climbed aboard the shiny silver rocket, and together they zoomed past twinkling constellations and sleeping clouds. It was the most magical adventure ever.",
-    imageUrl: '/demo-poppy-rocket.png',
-    audioUrl: '/demo-story.mp3',
-    childName: 'Poppy'
-  };
-  // --------------------------------------
 
   return (
     <main style={{
@@ -32,8 +19,6 @@ export default async function LandingPage() {
       overflowX: 'hidden',
       position: 'relative'
     }}>
-      {/* ... (Background Ambience omitted for brevity, it's fine) ... */}
-
       {/* Background Ambience */}
       <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         {/* Stars */}
@@ -118,7 +103,6 @@ export default async function LandingPage() {
 
       {/* Hero Section */}
       <section className="hero-section">
-
         {/* LEFT COMPONENT: Hero Image (Desktop Left) */}
         <div className="hero-blob-container">
           <Image
@@ -140,8 +124,6 @@ export default async function LandingPage() {
 
         {/* RIGHT COMPONENT: Content (Desktop Right) */}
         <div className="hero-content-wrapper">
-
-
           {/* Main Heading */}
           <div>
             <h1 style={{
@@ -185,7 +167,7 @@ export default async function LandingPage() {
             fontWeight: '500',
             marginBottom: '1rem'
           }}>
-            Every story is uniquely crafted for your child. They'll hear their own name, enjoy adventures tailored to their age, and explore worlds built around what they love most—from dinosaurs to princesses, space to unicorns.
+            Every story is uniquely crafted for your child. They&apos;ll hear their own name, enjoy adventures tailored to their age, and explore worlds built around what they love most—from dinosaurs to princesses, space to unicorns.
           </p>
 
           {/* CTA Buttons */}
@@ -195,7 +177,6 @@ export default async function LandingPage() {
             </Link>
           </div>
         </div>
-
       </section>
 
       {/* Feature Grid */}
@@ -346,7 +327,7 @@ export default async function LandingPage() {
                 lineHeight: '1.7',
                 marginBottom: '2rem'
               }}>
-                We know that as a parent, safety is your #1 priority. It's ours too.
+                We know that as a parent, safety is your #1 priority. It&apos;s ours too.
                 BeddyBot uses advanced AI content filtering to ensure every story is
                 gentle, non-violent, and perfectly appropriate for young ears.
               </p>
@@ -439,18 +420,10 @@ export default async function LandingPage() {
         </ScrollReveal>
       </section>
 
-      {/* Demo Story Section (Dynamic) */}
-      {demoStory && (
-        <ScrollReveal>
-          <StoryDemo
-            title={demoStory.title}
-            content={demoStory.content}
-            imageUrl={demoStory.imageUrl}
-            audioUrl={demoStory.audioUrl}
-            childName={demoStory.childName}
-          />
-        </ScrollReveal>
-      )}
+      {/* Demo / Teaser Section */}
+      <ScrollReveal>
+        <TeaserGenerator />
+      </ScrollReveal>
 
       {/* Pricing / Plans Section */}
       <section style={{
@@ -493,49 +466,45 @@ export default async function LandingPage() {
               price="Free"
               description="Perfect for one bedtime story."
               features={[
-                "1 Personalized Story",
-                "Standard Themes",
-                "Standard Audio"
+                "1 Free Story",
+                "Basic AI Narration",
+                "Web Access Only"
               ]}
-              buttonText="Create Free Account"
-              link="/signup"
-              isPopular={false}
+              ctaText="Try for Free"
+              ctaLink="/signup"
             />
 
-            {/* Monthly Plan */}
+            {/* Monthly Plan (Featured) */}
             <PricingCard
               title="Monthly"
-              price="$9.99"
-              period="/month"
-              description="Unlimited stories for active imaginations."
+              price="$5.99"
+              period="/mo"
+              description="Unlimited stories, cancel anytime."
               features={[
-                "40 Stories per Month",
-                "Save 30 Stories Forever",
-                "Priority Generation",
-                "Access to All Future Story Themes"
+                "Unlimited Stories",
+                "Premium Voice Narration",
+                "Save & Replay Favorites",
+                "Priority Support"
               ]}
-              buttonText="Start Monthly"
-              link="/signup?plan=monthly"
-              isPopular={false}
-              accentColor="#4D96FF"
+              ctaText="Start Free Trial"
+              ctaLink="/signup"
+              isPopular={true}
             />
 
             {/* Yearly Plan */}
             <PricingCard
               title="Yearly"
               price="$49.99"
-              period="/year"
-              description="Best value for year-round magic."
+              period="/yr"
+              description="Best value for a year of magic."
               features={[
-                "Everything in Monthly",
-                "2 Months Free",
-                "Early Access to New Features",
-                "VIP Support"
+                "All Monthly Features",
+                "Save 25% vs Monthly",
+                "Exclusive Holiday Themes",
+                "Early Access to New Voices"
               ]}
-              buttonText="Start Yearly"
-              link="/signup?plan=yearly"
-              isPopular={true}
-              accentColor="#FFD700"
+              ctaText="Get Yearly Plan"
+              ctaLink="/signup"
             />
           </div>
         </ScrollReveal>
@@ -543,178 +512,134 @@ export default async function LandingPage() {
 
       {/* Footer */}
       <footer style={{
-        padding: '2rem 2rem 1rem',
+        padding: '3rem 2rem',
         textAlign: 'center',
-        position: 'relative',
-        zIndex: 1,
-        borderTop: '1px solid rgba(255,255,255,0.05)',
-        background: 'rgba(26, 34, 56, 0.4)'
+        borderTop: '1px solid rgba(255,255,255,0.1)',
+        background: 'rgba(15, 23, 42, 0.8)'
       }}>
-        <p style={{
-          fontSize: '0.9rem',
-          color: 'rgba(255,255,255,0.6)',
-          margin: 0
-        }}>
-          Brought to you by{' '}
-          <a
-            href="https://CoastalCreativeLab.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              color: 'var(--color-accent-blue)',
-              textDecoration: 'none',
-              fontWeight: '600',
-              transition: 'opacity 0.2s'
-            }}
-            className="hover:opacity-80"
-          >
-            CoastalCreativeLab.com
-          </a>
+        <div style={{ marginBottom: '1.5rem', fontWeight: '800', fontSize: '1.5rem', display: 'flex', justifyContent: 'center', gap: '0.5rem', alignItems: 'center' }}>
+          <span style={{ fontSize: '2rem' }}>🤖</span> BeddyBot
+        </div>
+        <p style={{ color: 'rgba(255,255,255,0.5)', marginBottom: '1rem' }}>
+          © {new Date().getFullYear()} BeddyBot. All rights reserved.
         </p>
-        <p style={{
-          fontSize: '0.85rem',
-          color: 'rgba(255,255,255,0.4)',
-          marginTop: '0.5rem'
-        }}>
-          Support: <a href="mailto:info@coastalcrativelab.com" style={{ color: 'inherit', textDecoration: 'underline' }}>info@coastalcrativelab.com</a>
-        </p>
+        <div style={{ display: 'flex', gap: '2rem', justifyContent: 'center', fontSize: '0.9rem', color: 'rgba(255,255,255,0.5)' }}>
+          <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
+          <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+          <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
+        </div>
       </footer>
     </main>
   );
 }
 
+// --- HELPER COMPONENTS ---
+
 function FeatureCard({ icon, title, desc, accentColor }: { icon: string, title: string, desc: string, accentColor: string }) {
   return (
-    <div style={{
-      background: 'linear-gradient(145deg, rgba(26, 34, 56, 0.8), rgba(26, 34, 56, 0.4))',
-      backdropFilter: 'blur(20px)',
-      border: '1px solid rgba(255,255,255,0.1)',
+    <div className="card-hover-effect" style={{
+      background: 'rgba(255, 255, 255, 0.03)',
+      border: '1px solid rgba(255, 255, 255, 0.05)',
       borderRadius: '24px',
-      padding: '2.5rem',
+      padding: '2rem',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: '1.5rem',
       position: 'relative',
-      overflow: 'hidden',
-      transition: 'all 0.3s ease',
-      cursor: 'pointer'
-    }}
-      className="feature-card-hover"
-    >
-      {/* Accent gradient overlay */}
+      overflow: 'hidden'
+    }}>
       <div style={{
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        height: '4px',
-        background: `linear-gradient(90deg, transparent, ${accentColor}, transparent)`,
-        opacity: 0.6
+        position: 'absolute', top: 0, left: 0, width: '100%', height: '4px',
+        background: accentColor.replace('0.2', '1') // Full opacity for border
       }} />
 
-      {/* Icon Container */}
       <div style={{
-        width: '80px',
-        height: '80px',
-        borderRadius: '20px',
+        width: '80px', height: '80px',
         background: accentColor,
+        borderRadius: '20px',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: '1.5rem',
-        boxShadow: `0 10px 30px ${accentColor}`,
-        position: 'relative'
+        marginBottom: '0.5rem'
       }}>
-        <Image
-          src={icon}
-          alt={title}
-          width={50}
-          height={50}
-          style={{ filter: 'brightness(1.1)' }}
-        />
+        <Image src={icon} alt={title} width={50} height={50} style={{ objectFit: 'contain' }} />
       </div>
 
-      <h3 style={{
-        fontSize: '1.6rem',
-        fontWeight: '800',
-        marginBottom: '1rem',
-        color: 'white'
-      }}>
-        {title}
-      </h3>
-
-      <p style={{
-        fontSize: '1.05rem',
-        opacity: 0.85,
-        lineHeight: '1.7',
-        color: 'rgba(255,255,255,0.9)'
-      }}>
-        {desc}
-      </p>
+      <h3 style={{ fontSize: '1.5rem', fontWeight: '700' }}>{title}</h3>
+      <p style={{ color: 'rgba(255,255,255,0.7)', lineHeight: '1.6' }}>{desc}</p>
     </div>
   );
 }
 
-function PricingCard({ title, price, period, description, features, buttonText, link, isPopular, accentColor = '#ffffff' }: any) {
+interface PricingCardProps {
+  title: string;
+  price: string;
+  period?: string;
+  description: string;
+  features: string[];
+  ctaText: string;
+  ctaLink: string;
+  isPopular?: boolean;
+}
+
+function PricingCard({ title, price, period, description, features, ctaText, ctaLink, isPopular = false }: PricingCardProps) {
   return (
     <div style={{
-      background: 'rgba(26, 34, 56, 0.6)',
-      border: isPopular ? `2px solid ${accentColor}` : '1px solid rgba(255,255,255,0.1)',
-      borderRadius: '24px',
+      background: isPopular ? 'rgba(77, 150, 255, 0.1)' : 'rgba(255, 255, 255, 0.03)',
+      border: isPopular ? '2px solid #4D96FF' : '1px solid rgba(255, 255, 255, 0.1)',
+      borderRadius: '30px',
       padding: '2.5rem',
       display: 'flex',
       flexDirection: 'column',
       position: 'relative',
-      overflow: 'hidden',
       transform: isPopular ? 'scale(1.05)' : 'none',
-      boxShadow: isPopular ? `0 20px 40px -10px ${accentColor}40` : 'none',
-      zIndex: isPopular ? 2 : 1
+      boxShadow: isPopular ? '0 20px 50px rgba(77, 150, 255, 0.15)' : 'none'
     }}>
       {isPopular && (
         <div style={{
-          position: 'absolute',
-          top: '0',
-          right: '0',
-          background: accentColor,
-          color: 'black',
-          padding: '0.5rem 1.5rem',
-          borderBottomLeftRadius: '20px',
-          fontWeight: 'bold',
-          fontSize: '0.8rem'
+          position: 'absolute', top: '-15px', left: '50%', transform: 'translateX(-50%)',
+          background: '#4D96FF', color: 'white', padding: '0.5rem 1.5rem',
+          borderRadius: '50px', fontWeight: '700', fontSize: '0.9rem',
+          boxShadow: '0 5px 15px rgba(77, 150, 255, 0.4)'
         }}>
-          POPULAR
+          Most Popular
         </div>
       )}
 
-      <h3 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '0.5rem', color: isPopular ? accentColor : 'white' }}>{title}</h3>
-      <div style={{ display: 'flex', alignItems: 'baseline', marginBottom: '1rem' }}>
-        <span style={{ fontSize: '2.5rem', fontWeight: '800' }}>{price}</span>
-        {period && <span style={{ opacity: 0.7, marginLeft: '5px' }}>{period}</span>}
+      <h3 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '0.5rem', color: isPopular ? '#4D96FF' : 'white' }}>{title}</h3>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.2rem', marginBottom: '1rem' }}>
+        <span style={{ fontSize: '3rem', fontWeight: '800' }}>{price}</span>
+        {period && <span style={{ color: 'rgba(255,255,255,0.6)' }}>{period}</span>}
       </div>
-      <p style={{ opacity: 0.7, marginBottom: '2rem', minHeight: '3rem' }}>{description}</p>
+      <p style={{ color: 'rgba(255,255,255,0.7)', marginBottom: '2rem' }}>{description}</p>
 
-      <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 2rem', flex: 1 }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
         {features.map((feature: string, i: number) => (
-          <li key={i} style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem', opacity: 0.9 }}>
-            <span style={{ marginRight: '10px', color: isPopular ? accentColor : '#4bb543' }}>✓</span>
+          <div key={i} style={{ display: 'flex', gap: '0.8rem', alignItems: 'center', color: 'rgba(255,255,255,0.9)' }}>
+            <div style={{ width: '20px', height: '20px', background: 'rgba(255,255,255,0.1)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem' }}>✓</div>
             {feature}
-          </li>
+          </div>
         ))}
-      </ul>
+      </div>
 
-      <Link href={link} style={{ textDecoration: 'none' }}>
+      <Link href={ctaLink}>
         <button style={{
           width: '100%',
           padding: '1rem',
-          borderRadius: '12px',
+          borderRadius: '16px',
+          background: isPopular ? '#4D96FF' : 'rgba(255,255,255,0.1)',
+          color: 'white',
+          fontWeight: '700',
           border: 'none',
-          background: isPopular ? accentColor : 'rgba(255,255,255,0.1)',
-          color: isPopular ? 'black' : 'white',
-          fontWeight: 'bold',
           cursor: 'pointer',
-          transition: 'transform 0.2s',
-          fontSize: '1rem'
+          transition: 'all 0.2s'
         }}>
-          {buttonText}
+          {ctaText}
         </button>
       </Link>
     </div>
   );
 }
+
+
+

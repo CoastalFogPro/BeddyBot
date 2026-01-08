@@ -37,4 +37,13 @@ export const stories = pgTable('stories', {
     theme: text('theme'),
     duration: text('duration'),
     createdAt: timestamp('created_at').defaultNow().notNull(),
+
+});
+
+export const guest_generations = pgTable('guest_generations', {
+    id: uuid('id').defaultRandom().primaryKey(),
+    ipAddress: text('ip_address').notNull().unique(),
+    generationCount: integer('generation_count').default(0).notNull(),
+    lastGeneratedAt: timestamp('last_generated_at').defaultNow().notNull(),
+    createdAt: timestamp('created_at').defaultNow().notNull(),
 });
