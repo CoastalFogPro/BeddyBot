@@ -64,6 +64,13 @@ export async function POST(req: Request) {
 
     if (event.type === 'customer.subscription.updated') {
         const subscription = event.data.object as any;
+
+        // Check for manual override
+        const [existingUser] = await db.select().from(users).where(eq(users.stripeCustomerId, subscription.customer as string)).limit(1);
+        if (existingUser && existingUser.stripeSubscriptionId === 'manual') {
+            return new NextResponse('Ignored: User is strictly manual premium', { status: 200 });
+        }
+
         await db.update(users)
             .set({
                 subscriptionStatus: subscription.status,
@@ -74,6 +81,13 @@ export async function POST(req: Request) {
 
     if (event.type === 'customer.subscription.deleted') {
         const subscription = event.data.object as any;
+
+        // Check for manual override
+        const [existingUser] = await db.select().from(users).where(eq(users.stripeCustomerId, subscription.customer as string)).limit(1);
+        if (existingUser && existingUser.stripeSubscriptionId === 'manual') {
+            return new NextResponse('Ignored: User is strictly manual premium', { status: 200 });
+        }
+
         await db.update(users)
             .set({
                 subscriptionStatus: 'canceled',

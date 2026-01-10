@@ -99,10 +99,18 @@ export async function PATCH(
         if (subscriptionStatus) {
             updates.subscriptionStatus = subscriptionStatus;
 
+            // If manually setting to active, prevent Stripe overrides
+            if (subscriptionStatus === 'active') {
+                updates.stripeSubscriptionId = 'manual';
+                // Ensure they have a generous limit (though 40 is standard premium)
+                // If planType is null, they just get the standard premium limit defined in generate-story
+            }
+
             // If reverting to free, clear other data
             if (subscriptionStatus === 'free' || subscriptionStatus === 'canceled') {
                 updates.planType = null;
                 updates.subscriptionEndDate = null;
+                updates.stripeSubscriptionId = null; // Clear manual flag
                 // We keep stripeCustomerId so they can re-subscribe easily later
             }
         }

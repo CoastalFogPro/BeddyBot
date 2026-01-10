@@ -16,14 +16,14 @@ export async function POST(req: Request) {
     }
 
     try {
-        const { text, narrator } = await req.json();
+        const { text, narrator, style } = await req.json();
 
         if (!text) {
             console.error("TTS Error: No text provided");
             return NextResponse.json({ error: 'Text is required' }, { status: 400 });
         }
 
-        console.log("Generating speech for text length:", text.length);
+        console.log(`Generating speech via Google TTS. Length: ${text.length}, Voice: ${narrator}, Style: ${style}`);
         const safeText = text.length > 4000 ? text.substring(0, 4000) + "..." : text;
 
         // ---------------------------------------------------------
@@ -36,14 +36,10 @@ export async function POST(req: Request) {
             const fs = require('fs');
 
             // Check for credentials in Env Var (JSON string) OR file path
-            // If neither exists, this might throw or fail, catching us into the fallback
-
             const options: any = {};
             if (process.env.GOOGLE_CREDENTIALS_JSON) {
                 options.credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS_JSON);
             } else {
-                // FALLBACK: Local file check for specific beddybot project
-                // This allows localhost to work without restarting global shell
                 const localKeyPath = path.resolve(process.cwd(), 'google-credentials.json');
                 if (fs.existsSync(localKeyPath)) {
                     options.keyFilename = localKeyPath;
@@ -57,21 +53,36 @@ export async function POST(req: Request) {
             const voiceName = (narrator === 'male') ? 'en-US-Neural2-D' : 'en-US-Neural2-F';
             const ssmlGender = (narrator === 'male') ? 'MALE' : 'FEMALE';
 
-            // Pitch/Speed Tuning for "Story Mode" (Optimized for Natural/Warm tone)
-            // Female: Slight pitch bump, 0.85 speed (very relaxed)
-            // Male: Pitch drop, 0.85 speed
-            const pitch = (narrator === 'male') ? -1.0 : 1.0;
-            const speakingRate = 0.85; // Much slower for bedtime reading
+            // --- STYLE TUNING ---
+            // "much slower" -> 0.75
+            let speakingRate = 0.75;
+            let pitch = (narrator === 'male') ? -2.0 : 0.0; // Deepen male voice slightly
+            let volumeGainDb = 0.0;
+
+            // Adjust based on style
+            const styleLower = (style || '').toLowerCase();
+            if (styleLower.includes('snuggle') || styleLower.includes('bedtime') || styleLower.includes('dream')) {
+                // Soft / Whispery
+                pitch -= 1.0; // Lower pitch is more soothing
+                speakingRate = 0.70; // Even slower
+                volumeGainDb = -2.0; // Softer
+            } else if (styleLower.includes('adventure') || styleLower.includes('action') || styleLower.includes('funny')) {
+                // Louder / Energetic
+                speakingRate = 0.80; // Slightly faster (but still slow)
+                volumeGainDb = 2.0; // Louder
+                pitch += 1.0; // Higher energy
+            }
 
             const request = {
                 input: {
                     ssml: `
                         <speak>
-                            <prosody rate="90%">
+                            <prosody rate="default"> 
                                 ${safeText
-                            .replace(/\./g, '.<break time="600ms"/>') // Longer breaks for sentences
-                            .replace(/,/g, ',<break time="300ms"/>') // Breath pause for commas
-                            .replace(/!/g, '!<break time="800ms"/>') // Dramatic pause for excitement
+                            .replace(/\./g, '.<break time="1000ms"/>') // Long finish pause
+                            .replace(/,/g, ',<break time="400ms"/>')   // Breath pause
+                            .replace(/!/g, '!<break time="800ms"/>')   // Excitement pause
+                            .replace(/\?/g, '?<break time="800ms"/>')   // Question pause
                         }
                             </prosody>
                         </speak>
@@ -82,7 +93,8 @@ export async function POST(req: Request) {
                     audioEncoding: 'MP3',
                     pitch: pitch,
                     speakingRate: speakingRate,
-                    effectsProfileId: ['headphone-class-device'] // Optimizes for higher fidelity/bass
+                    volumeGainDb: volumeGainDb,
+                    effectsProfileId: ['headphone-class-device']
                 },
             };
 

@@ -69,7 +69,7 @@ export default function StoryView() {
             const res = await fetch('/api/audio/speech', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ text: fullText, narrator: requestedNarrator }),
+                body: JSON.stringify({ text: fullText, narrator: requestedNarrator, style: requestedStyle }),
             });
 
             if (!res.ok) throw new Error('Failed to generate audio');
